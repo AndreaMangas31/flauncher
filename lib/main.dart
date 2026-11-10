@@ -19,6 +19,7 @@
 import 'dart:async';
 
 import 'package:flauncher/database.dart';
+import 'package:flauncher/dream_main.dart' as dream_library;
 import 'package:flauncher/image_budget.dart';
 import 'package:flauncher/flauncher_channel.dart';
 import 'package:flauncher/providers/apps_service.dart';
@@ -33,6 +34,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'flauncher_app.dart';
+
+/// Screensaver isolate. It has to live in this library: release AOT drops a
+/// library that `main` never reaches, and the engine then fails
+/// `Dart_LookupLibrary` for `package:flauncher/dream_main.dart`.
+@pragma('vm:entry-point')
+void dreamMain() => dream_library.dreamMain();
 
 Future<void> main() async {
   final WidgetsBinding binding = WidgetsFlutterBinding.ensureInitialized();

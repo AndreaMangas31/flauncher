@@ -23,15 +23,19 @@ import 'package:flauncher/providers/recommendations_service.dart';
 import 'package:flauncher/theme/emerald_shrine.dart';
 import 'package:flauncher/widgets/senku_dream.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Entry point for [SenkuDreamService]. Kept off the launcher isolate so a
-/// screensaver does not open the app database.
-@pragma('vm:entry-point')
+/// Runs inside the dream isolate. [dreamMain] in `main.dart` is the symbol
+/// the engine looks up; this is the body, so the screensaver still does not
+/// open the launcher database.
 void dreamMain() {
   WidgetsFlutterBinding.ensureInitialized();
   installImageCacheBudget();
   runApp(const SenkuDreamApp());
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    const MethodChannel('me.efesser.flauncher/dream').invokeMethod<void>('firstFrame');
+  });
 }
 
 class SenkuDreamApp extends StatefulWidget {
