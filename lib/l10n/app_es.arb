@@ -107,5 +107,10 @@
     "withEllipsisAddTo": "Añadir a...",
     "showRecommendations": "Mostrar Recomendadas por Senku",
     "recommendationsFeedUrl": "URL del feed de recomendaciones",
-    "recommendationsRow": "Recomendadas por Senku"
+    "recommendationsRow": "Recomendadas por Senku",
+    "moreApps": "Más apps",
+    "moreAppsRecent": "recientes",
+    "inputs": "Entradas",
+    "noHdmiInputs": "No hay entradas HDMI en este televisor.",
+    "openSystemInputs": "Abrir entradas del sistema"
 }

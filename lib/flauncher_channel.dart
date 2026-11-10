@@ -61,6 +61,38 @@ class FLauncherChannel {
 
   Future<void> openSettings() async => await _methodChannel.invokeMethod('openSettings');
 
+  Future<void> openWifiSettings() async => await _methodChannel.invokeMethod('openWifiSettings');
+
+  /// HDMI ports only. Empty on a phone, an emulator, or when the input
+  /// service is missing. Never throws.
+  Future<List<Map<String, String>>> listHdmiInputs() async {
+    try {
+      final List<dynamic>? rows =
+          await _methodChannel.invokeListMethod<dynamic>('listHdmiInputs');
+      if (rows == null) {
+        return const [];
+      }
+      return [
+        for (final dynamic row in rows)
+          if (row is Map)
+            row.map((key, value) => MapEntry(key.toString(), value?.toString() ?? '')),
+      ];
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  /// Switches to [inputId]. An empty id opens the system inputs screen.
+  Future<bool> openHdmiInput(String inputId) async {
+    try {
+      final bool? opened =
+          await _methodChannel.invokeMethod<bool>('openHdmiInput', inputId);
+      return opened ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<void> openAppInfo(String packageName) async => await _methodChannel.invokeMethod('openAppInfo', packageName);
 
   Future<void> uninstallApp(String packageName) async => await _methodChannel.invokeMethod('uninstallApp', packageName);

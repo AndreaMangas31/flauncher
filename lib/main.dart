@@ -19,6 +19,7 @@
 import 'dart:async';
 
 import 'package:flauncher/database.dart';
+import 'package:flauncher/image_budget.dart';
 import 'package:flauncher/flauncher_channel.dart';
 import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/providers/launcher_state.dart';
@@ -35,6 +36,8 @@ import 'flauncher_app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  installImageCacheBudget();
+  listenForTrimMemory();
   initializeDateFormatting();
 
   final sharedPreferences = await SharedPreferences.getInstance();

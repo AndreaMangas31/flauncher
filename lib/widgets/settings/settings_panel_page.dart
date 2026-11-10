@@ -44,7 +44,8 @@ class SettingsPanelPage extends StatelessWidget {
 
     return Consumer<SettingsService>(
         builder: (context, settingsService, __) => Column(children: [
-              Text(localizations.settings, style: Theme.of(context).textTheme.titleLarge),
+              Text(localizations.settings,
+                  style: Theme.of(context).textTheme.titleLarge),
               const Divider(),
               Expanded(
                   child: SingleChildScrollView(
@@ -57,10 +58,12 @@ class SettingsPanelPage extends StatelessWidget {
                       children: [
                         const Icon(Icons.apps),
                         Container(width: 8),
-                        Text(localizations.applications, style: Theme.of(context).textTheme.bodyMedium),
+                        Text(localizations.applications,
+                            style: Theme.of(context).textTheme.bodyMedium),
                       ],
                     ),
-                    onPressed: () => Navigator.of(context).pushNamed(ApplicationsPanelPage.routeName),
+                    onPressed: () => Navigator.of(context)
+                        .pushNamed(ApplicationsPanelPage.routeName),
                   ),
                 ),
                 TextButton(
@@ -68,30 +71,36 @@ class SettingsPanelPage extends StatelessWidget {
                     children: [
                       const Icon(Icons.category),
                       Container(width: 8),
-                      Text(localizations.launcherSections, style: Theme.of(context).textTheme.bodyMedium),
+                      Text(localizations.launcherSections,
+                          style: Theme.of(context).textTheme.bodyMedium),
                     ],
                   ),
-                  onPressed: () => Navigator.of(context).pushNamed(LauncherSectionsPanelPage.routeName),
+                  onPressed: () => Navigator.of(context)
+                      .pushNamed(LauncherSectionsPanelPage.routeName),
                 ),
                 TextButton(
                   child: Row(
                     children: [
                       const Icon(Icons.wallpaper_outlined),
                       Container(width: 8),
-                      Text(localizations.wallpaper, style: Theme.of(context).textTheme.bodyMedium),
+                      Text(localizations.wallpaper,
+                          style: Theme.of(context).textTheme.bodyMedium),
                     ],
                   ),
-                  onPressed: () => Navigator.of(context).pushNamed(WallpaperPanelPage.routeName),
+                  onPressed: () => Navigator.of(context)
+                      .pushNamed(WallpaperPanelPage.routeName),
                 ),
                 TextButton(
                   child: Row(
                     children: [
                       const Icon(Icons.tips_and_updates),
                       Container(width: 8),
-                      Text(localizations.statusBar, style: Theme.of(context).textTheme.bodyMedium),
+                      Text(localizations.statusBar,
+                          style: Theme.of(context).textTheme.bodyMedium),
                     ],
                   ),
-                  onPressed: () => Navigator.of(context).pushNamed(StatusBarPanelPage.routeName),
+                  onPressed: () => Navigator.of(context)
+                      .pushNamed(StatusBarPanelPage.routeName),
                 ),
                 const Divider(),
                 TextButton(
@@ -99,7 +108,13 @@ class SettingsPanelPage extends StatelessWidget {
                     children: [
                       const Icon(Icons.settings_outlined),
                       Container(width: 8),
-                      Text(localizations.systemSettings, style: Theme.of(context).textTheme.bodyMedium),
+                      Flexible(
+                        child: Text(
+                          localizations.systemSettings,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
                   ),
                   onPressed: () => context.read<AppsService>().openSettings(),
@@ -110,7 +125,13 @@ class SettingsPanelPage extends StatelessWidget {
                     children: [
                       const Icon(Icons.date_range),
                       Container(width: 8),
-                      Text(localizations.dateAndTimeFormat, style: Theme.of(context).textTheme.bodyMedium),
+                      Flexible(
+                        child: Text(
+                          localizations.dateAndTimeFormat,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
                   ),
                   onPressed: () async => await _dateTimeFormatDialog(context),
@@ -120,27 +141,39 @@ class SettingsPanelPage extends StatelessWidget {
                     children: [
                       const Icon(Icons.arrow_back),
                       Container(width: 8),
-                      Text(localizations.backButtonAction, style: Theme.of(context).textTheme.bodyMedium),
+                      Flexible(
+                        child: Text(
+                          localizations.backButtonAction,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
                   ),
                   onPressed: () async => await _backButtonActionDialog(context),
                 ),
                 RoundedSwitchListTile(
                   value: settingsService.appHighlightAnimationEnabled,
-                  onChanged: (value) => settingsService.setAppHighlightAnimationEnabled(value),
-                  title: Text(localizations.appCardHighlightAnimation, style: Theme.of(context).textTheme.bodyMedium),
+                  onChanged: (value) =>
+                      settingsService.setAppHighlightAnimationEnabled(value),
+                  title: Text(localizations.appCardHighlightAnimation,
+                      style: Theme.of(context).textTheme.bodyMedium),
                   secondary: Icon(Icons.filter_center_focus),
                 ),
                 RoundedSwitchListTile(
                   value: settingsService.appKeyClickEnabled,
-                  onChanged: (value) => settingsService.setAppKeyClickEnabled(value),
-                  title: Text(localizations.appKeyClick, style: Theme.of(context).textTheme.bodyMedium),
+                  onChanged: (value) =>
+                      settingsService.setAppKeyClickEnabled(value),
+                  title: Text(localizations.appKeyClick,
+                      style: Theme.of(context).textTheme.bodyMedium),
                   secondary: Icon(Icons.notifications_active),
                 ),
                 RoundedSwitchListTile(
                     value: settingsService.showCategoryTitles,
-                    onChanged: (value) => settingsService.setShowCategoryTitles(value),
-                    title: Text(localizations.showCategoryTitles, style: Theme.of(context).textTheme.bodyMedium),
+                    onChanged: (value) =>
+                        settingsService.setShowCategoryTitles(value),
+                    title: Text(localizations.showCategoryTitles,
+                        style: Theme.of(context).textTheme.bodyMedium),
                     secondary: Icon(Icons.abc)),
                 const RecommendationsSettings(),
                 const Divider(),
@@ -149,16 +182,25 @@ class SettingsPanelPage extends StatelessWidget {
                       children: [
                         const Icon(Icons.info_outline),
                         Container(width: 8),
-                        Text(localizations.aboutFlauncher, style: Theme.of(context).textTheme.bodyMedium),
+                        Flexible(
+                          child: Text(
+                            localizations.aboutFlauncher,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                       ],
                     ),
                     onPressed: () => showDialog(
                         context: context,
                         builder: (_) => FutureBuilder<PackageInfo>(
                               future: PackageInfo.fromPlatform(),
-                              builder: (context, snapshot) => snapshot.connectionState == ConnectionState.done
-                                  ? FLauncherAboutDialog(packageInfo: snapshot.data!)
-                                  : Container(),
+                              builder: (context, snapshot) =>
+                                  snapshot.connectionState ==
+                                          ConnectionState.done
+                                      ? FLauncherAboutDialog(
+                                          packageInfo: snapshot.data!)
+                                      : Container(),
                             )))
               ])))
             ]));
@@ -170,20 +212,27 @@ class SettingsPanelPage extends StatelessWidget {
 
     final newAction = await showDialog<String>(
         context: context,
-        builder: (context) => SimpleDialog(title: Text(localizations.dialogTitleBackButtonAction), children: [
-              SimpleDialogOption(
-                child: Text(localizations.dialogOptionBackButtonActionDoNothing),
-                onPressed: () => Navigator.pop(context, ""),
-              ),
-              SimpleDialogOption(
-                child: Text(localizations.dialogOptionBackButtonActionShowClock),
-                onPressed: () => Navigator.pop(context, BACK_BUTTON_ACTION_CLOCK),
-              ),
-              SimpleDialogOption(
-                child: Text(localizations.dialogOptionBackButtonActionShowScreensaver),
-                onPressed: () => Navigator.pop(context, BACK_BUTTON_ACTION_SCREENSAVER),
-              )
-            ]));
+        builder: (context) => SimpleDialog(
+                title: Text(localizations.dialogTitleBackButtonAction),
+                children: [
+                  SimpleDialogOption(
+                    child: Text(
+                        localizations.dialogOptionBackButtonActionDoNothing),
+                    onPressed: () => Navigator.pop(context, ""),
+                  ),
+                  SimpleDialogOption(
+                    child: Text(
+                        localizations.dialogOptionBackButtonActionShowClock),
+                    onPressed: () =>
+                        Navigator.pop(context, BACK_BUTTON_ACTION_CLOCK),
+                  ),
+                  SimpleDialogOption(
+                    child: Text(localizations
+                        .dialogOptionBackButtonActionShowScreensaver),
+                    onPressed: () =>
+                        Navigator.pop(context, BACK_BUTTON_ACTION_SCREENSAVER),
+                  )
+                ]));
 
     if (newAction != null) {
       await service.setBackButtonAction(newAction);
@@ -194,7 +243,9 @@ class SettingsPanelPage extends StatelessWidget {
     SettingsService service = context.read<SettingsService>();
 
     final formatTuple = await showDialog<Tuple2<String, String>>(
-        context: context, builder: (_) => DateTimeFormatDialog(service.dateFormat, service.timeFormat));
+        context: context,
+        builder: (_) =>
+            DateTimeFormatDialog(service.dateFormat, service.timeFormat));
 
     if (formatTuple != null) {
       await service.setDateTimeFormat(formatTuple.item1, formatTuple.item2);

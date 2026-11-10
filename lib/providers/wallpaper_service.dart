@@ -33,25 +33,39 @@ class WallpaperService extends ChangeNotifier {
   late File _wallpaperFile;
 
   ImageProvider? _wallpaper;
+  bool _ready = false;
 
-  ImageProvider?  get wallpaper     => _wallpaper;
+  ImageProvider? get wallpaper => _wallpaper;
+
+  /// False until the saved photo has been looked up, so the shrine does not
+  /// flash over a wallpaper that is about to appear.
+  bool get ready => _ready;
+
+  /// True when the user picked a gradient in settings. That choice replaces
+  /// the shrine; a null uuid means "keep the theme default".
+  bool get hasCustomGradient => _settingsService.gradientUuid != null;
 
   FLauncherGradient get gradient => FLauncherGradients.all.firstWhere(
         (gradient) => gradient.uuid == _settingsService.gradientUuid,
         orElse: () => FLauncherGradients.greatWhale,
       );
 
-  WallpaperService(this._fLauncherChannel, this._settingsService) :
-    _wallpaper = null
-  {
+  WallpaperService(this._fLauncherChannel, this._settingsService)
+      : _wallpaper = null {
     _init();
   }
 
   Future<void> _init() async {
-    final directory = await getApplicationDocumentsDirectory();
-    _wallpaperFile = File("${directory.path}/wallpaper");
-    if (await _wallpaperFile.exists()) {
-      _wallpaper = FileImage(_wallpaperFile);
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      _wallpaperFile = File("${directory.path}/wallpaper");
+      if (await _wallpaperFile.exists()) {
+        _wallpaper = FileImage(_wallpaperFile);
+      }
+    } catch (_) {
+      // Storage can be missing on a fresh profile. The shrine still works.
+    } finally {
+      _ready = true;
       notifyListeners();
     }
   }
@@ -77,6 +91,7 @@ class WallpaperService extends ChangeNotifier {
       await _wallpaperFile.delete();
     }
 
+    _wallpaper = null;
     _settingsService.setGradientUuid(fLauncherGradient.uuid);
     notifyListeners();
   }

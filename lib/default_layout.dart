@@ -39,6 +39,7 @@ const String disneyPlusPackage = "com.disney.disneyplus";
 const String primeVideoPackage = "com.amazon.amazonvideo.livingroom";
 const String maxPackage = "com.wbd.stream";
 const String hboNowPackage = "com.hbo.hbonow";
+const String filminTvPackage = "com.filmin.androidtv";
 const String filminPackage = "com.filmin.filminapp";
 
 const List<String> pinnedFavouritePackages = [
@@ -48,6 +49,7 @@ const List<String> pinnedFavouritePackages = [
   primeVideoPackage,
   maxPackage,
   hboNowPackage,
+  filminTvPackage,
   filminPackage,
 ];
 

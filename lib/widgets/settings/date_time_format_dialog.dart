@@ -20,7 +20,6 @@ import 'dart:io';
 
 import 'package:flauncher/widgets/tv_text_form_field.dart';
 import 'package:flutter/material.dart';
-import 'package:format/format.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
@@ -76,7 +75,8 @@ class DateTimeFormatDialog extends StatelessWidget {
   final String _initialDateFormat;
   final String _initialTimeFormat;
 
-  const DateTimeFormatDialog(String initialDateFormat, String initialTimeFormat, {super.key})
+  const DateTimeFormatDialog(String initialDateFormat, String initialTimeFormat,
+      {super.key})
       : _initialDateFormat = initialDateFormat,
         _initialTimeFormat = initialTimeFormat;
 
@@ -84,14 +84,18 @@ class DateTimeFormatDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     AppLocalizations localizations = AppLocalizations.of(context)!;
 
-    TextEditingController dateFormatFieldController = TextEditingController(text: _initialDateFormat);
-    TextEditingController timeFormatFieldController = TextEditingController(text: _initialTimeFormat);
+    TextEditingController dateFormatFieldController =
+        TextEditingController(text: _initialDateFormat);
+    TextEditingController timeFormatFieldController =
+        TextEditingController(text: _initialTimeFormat);
 
     List<DropdownMenuEntry<String>> menuEntries = [];
 
-    Iterable<Tuple2<String, String>> formatSpecifiers = dateFormatSpecifiers.followedBy(timeFormatSpecifiers);
+    Iterable<Tuple2<String, String>> formatSpecifiers =
+        dateFormatSpecifiers.followedBy(timeFormatSpecifiers);
     for (Tuple2<String, String> tuple in formatSpecifiers) {
-      menuEntries.add(DropdownMenuEntry(value: tuple.item1, label: tuple.item2));
+      menuEntries
+          .add(DropdownMenuEntry(value: tuple.item1, label: tuple.item2));
     }
 
     return ChangeNotifierProvider(
@@ -107,15 +111,19 @@ class DateTimeFormatDialog extends StatelessWidget {
                   if (model.dateFormatString.isEmpty) {
                     text = localizations.noDateFormatSpecified;
                   } else {
-                    DateFormat dateFormat = DateFormat(model.dateFormatString, Platform.localeName);
-                    text = localizations.formattedDate(dateFormat.format(DateTime.now()));
+                    DateFormat dateFormat =
+                        DateFormat(model.dateFormatString, Platform.localeName);
+                    text = localizations
+                        .formattedDate(dateFormat.format(DateTime.now()));
                   }
 
                   if (model.timeFormatString.isEmpty) {
                     text += "\n${localizations.noTimeFormatSpecified}";
                   } else {
-                    DateFormat dateFormat = DateFormat(model.timeFormatString, Platform.localeName);
-                    text += "\n${localizations.formattedTime(dateFormat.format(DateTime.now()))}";
+                    DateFormat dateFormat =
+                        DateFormat(model.timeFormatString, Platform.localeName);
+                    text +=
+                        "\n${localizations.formattedTime(dateFormat.format(DateTime.now()))}";
                   }
 
                   return Text(text);
@@ -125,11 +133,13 @@ class DateTimeFormatDialog extends StatelessWidget {
                   autofocus: true,
                   autovalidateMode: AutovalidateMode.always,
                   controller: dateFormatFieldController,
-                  decoration: InputDecoration(labelText: localizations.typeInTheDateFormat),
+                  decoration: InputDecoration(
+                      labelText: localizations.typeInTheDateFormat),
                   keyboardType: TextInputType.text,
                   onChanged: (value) => dateFormatStringChanged(context, value),
                   onFieldSubmitted: (value) {
-                    returnFromDialog(context, value, timeFormatFieldController.text);
+                    returnFromDialog(
+                        context, value, timeFormatFieldController.text);
                   },
                   validator: (value) {
                     String? result;
@@ -148,11 +158,13 @@ class DateTimeFormatDialog extends StatelessWidget {
                 TvTextFormField(
                   autovalidateMode: AutovalidateMode.always,
                   controller: timeFormatFieldController,
-                  decoration: InputDecoration(labelText: localizations.typeInTheHourFormat),
+                  decoration: InputDecoration(
+                      labelText: localizations.typeInTheHourFormat),
                   keyboardType: TextInputType.text,
                   onChanged: (value) => timeFormatStringChanged(context, value),
                   onFieldSubmitted: (value) {
-                    returnFromDialog(context, dateFormatFieldController.text, value);
+                    returnFromDialog(
+                        context, dateFormatFieldController.text, value);
                   },
                   validator: (value) {
                     String? result;
@@ -178,7 +190,8 @@ class DateTimeFormatDialog extends StatelessWidget {
                       if (selectedValue != null) {
                         bool isTimeFormat = false;
 
-                        for (Tuple2<String, String> tuple in timeFormatSpecifiers) {
+                        for (Tuple2<String, String> tuple
+                            in timeFormatSpecifiers) {
                           if (tuple.item1 == selectedValue) {
                             isTimeFormat = true;
                             break;
@@ -187,10 +200,12 @@ class DateTimeFormatDialog extends StatelessWidget {
 
                         if (isTimeFormat) {
                           timeFormatFieldController.text += selectedValue;
-                          timeFormatStringChanged(context, timeFormatFieldController.text);
+                          timeFormatStringChanged(
+                              context, timeFormatFieldController.text);
                         } else {
                           dateFormatFieldController.text += selectedValue;
-                          dateFormatStringChanged(context, dateFormatFieldController.text);
+                          dateFormatStringChanged(
+                              context, dateFormatFieldController.text);
                         }
                       }
                     })
@@ -208,7 +223,8 @@ class DateTimeFormatDialog extends StatelessWidget {
     model.setTimeFormatString(formatString);
   }
 
-  void returnFromDialog(BuildContext context, String dateFormatString, String timeFormatString) {
+  void returnFromDialog(
+      BuildContext context, String dateFormatString, String timeFormatString) {
     dateFormatString = dateFormatString.trim();
     timeFormatString = timeFormatString.trim();
 

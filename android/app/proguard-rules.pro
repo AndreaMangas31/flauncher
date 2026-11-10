@@ -6,4 +6,6 @@
 -keep class io.flutter.**  { *; }
 -keep class io.flutter.plugins.**  { *; }
 -dontwarn io.flutter.embedding.**
+# The screensaver is started by the system from the manifest, not from app code.
+-keep class me.efesser.flauncher.SenkuDreamService { *; }
 -dontwarn com.google.android.play.core.splitcompat.SplitCompatApplication

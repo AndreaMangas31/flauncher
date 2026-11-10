@@ -16,9 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'package:flauncher/default_layout.dart';
 import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/widgets/app_card.dart';
+import 'package:flauncher/widgets/inputs_picker.dart';
+import 'package:flauncher/widgets/app_row_fit.dart';
 import 'package:flauncher/widgets/category_container_common.dart';
+import 'package:flauncher/widgets/more_apps_tile.dart';
+import 'package:flauncher/widgets/section_heading.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,45 +31,83 @@ import '../models/app.dart';
 import '../models/category.dart';
 import '../providers/settings_service.dart';
 
-class CategoryRow extends StatelessWidget
-{
+class CategoryRow extends StatelessWidget {
   final Category category;
   final List<App> applications;
+  final double? rowHeight;
 
   CategoryRow({
     Key? key,
     required this.category,
     required this.applications,
+    this.rowHeight,
   }) : super(key: key);
+
+  double get _rowHeight => rowHeight ?? category.rowHeight.toDouble();
+
+  bool get _inputsFirst => category.name == appsCategoryName;
 
   @override
   Widget build(BuildContext context) {
     Widget categoryContent;
-    if (applications.isEmpty) {
+    if (applications.isEmpty && !_inputsFirst) {
       categoryContent = categoryContainerEmptyState(context);
-    }
-    else {
-      categoryContent = SizedBox(
-        height: category.rowHeight.toDouble(),
-        child: ListView.custom(
-          padding: const EdgeInsets.all(8),
-          scrollDirection: Axis.horizontal,
-          childrenDelegate: SliverChildBuilderDelegate(
-            childCount: applications.length,
-            findChildIndexCallback: _findChildIndex,
-            (context, index) => Padding(
-                key: Key(applications[index].packageName),
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: AppCard(
-                  category: category,
-                  application: applications[index],
-                  autofocus: index == 0,
-                  onMove: (direction) => _onMove(context, direction, index),
-                  onMoveEnd: () => _onMoveEnd(context)
-                )
-            )
-          )
-        )
+    } else {
+      categoryContent = LayoutBuilder(
+        builder: (context, constraints) {
+          final int leading = _inputsFirst ? 1 : 0;
+          final int visible = visibleAppCount(
+            maxWidth: constraints.maxWidth,
+            rowHeight: _rowHeight,
+            total: applications.length,
+            reservedSlots: leading,
+          );
+          final int hidden = applications.length - visible;
+          return SizedBox(
+            height: _rowHeight,
+            child: ListView.custom(
+              padding: const EdgeInsets.all(8),
+              scrollDirection: Axis.horizontal,
+              clipBehavior: Clip.none,
+              childrenDelegate: SliverChildBuilderDelegate(
+                childCount: leading + visible + (hidden > 0 ? 1 : 0),
+                findChildIndexCallback: _findChildIndex,
+                (context, index) {
+                  if (_inputsFirst && index == 0) {
+                    return const Padding(
+                      key: Key('inputs-tile'),
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: InputsTile(),
+                    );
+                  }
+                  final int appIndex = index - leading;
+                  if (appIndex >= visible) {
+                    return Padding(
+                      key: const Key('more-apps'),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: MoreAppsTile(
+                        category: category,
+                        hiddenApplications: applications.sublist(visible),
+                        indexOffset: visible,
+                      ),
+                    );
+                  }
+                  return Padding(
+                    key: Key(applications[appIndex].packageName),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: AppCard(
+                      category: category,
+                      application: applications[appIndex],
+                      autofocus: !_inputsFirst && appIndex == 0,
+                      onMove: (direction) => _onMove(context, direction, appIndex),
+                      onMoveEnd: () => _onMoveEnd(context),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        },
       );
     }
 
@@ -72,30 +115,33 @@ class CategoryRow extends StatelessWidget
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Selector<SettingsService, bool>(
-          selector: (context, service) => service.showCategoryTitles,
-          builder: (context, showCategoriesTitle, _) {
-            if (showCategoriesTitle) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 16, bottom: 8),
-                child: Text(category.name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(shadows: [const Shadow(color: Colors.black54, offset: Offset(1, 1), blurRadius: 8)])
-                ),
-              );
-            }
+            selector: (context, service) => service.showCategoryTitles,
+            builder: (context, showCategoriesTitle, _) {
+              if (showCategoriesTitle) {
+                return SectionHeading(category.name);
+              }
 
-            return SizedBox.shrink();
-          }
-        ),
+              return SizedBox.shrink();
+            }),
         categoryContent
       ],
     );
   }
 
-  int _findChildIndex(Key key) =>
-      applications.indexWhere((app) => app.packageName == (key as ValueKey<String>).value);
+  int? _findChildIndex(Key key) {
+    if (key is! ValueKey<String>) {
+      return null;
+    }
+    if (key.value == 'inputs-tile') {
+      return _inputsFirst ? 0 : null;
+    }
+    final int index = applications
+        .indexWhere((app) => app.packageName == key.value);
+    if (index < 0) {
+      return null;
+    }
+    return index + (_inputsFirst ? 1 : 0);
+  }
 
   void _onMove(BuildContext context, AxisDirection direction, int index) {
     int newIndex = 0;

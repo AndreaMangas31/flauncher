@@ -20,13 +20,14 @@ import 'dart:math';
 
 import 'package:flauncher/database.dart';
 import 'package:flauncher/flauncher_channel.dart';
+import 'package:flauncher/models/app.dart';
+import 'package:flauncher/models/category.dart';
 import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/providers/settings_service.dart';
 import 'package:flauncher/providers/wallpaper_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mockito/annotations.dart';
-
 
 @GenerateMocks([
   FLauncherChannel,
@@ -46,14 +47,16 @@ App fakeApp({
   String version = "1.0.0",
   bool hidden = false,
   bool sideloaded = false,
-}) =>
-    App(
-      packageName: packageName,
-      name: name,
-      version: version,
-      hidden: hidden,
-      sideloaded: sideloaded,
-    );
+}) {
+  final App app = App(
+    packageName: packageName,
+    name: name,
+    version: version,
+    hidden: hidden,
+  );
+  app.sideloaded = sideloaded;
+  return app;
+}
 
 Category fakeCategory({
   String name = "Favorites",
@@ -67,8 +70,16 @@ Category fakeCategory({
       id: Random().nextInt(1 << 32),
       name: name,
       sort: sort,
-      _sectionType: type,
-      _rowHeight: rowHeight,
+      type: type,
+      rowHeight: rowHeight,
       columnsCount: columnsCount,
       order: order,
     );
+
+/// Puts [apps] on [category] and returns it, for launcher-section stubs.
+Category withApps(Category category, List<App> apps) {
+  category.applications
+    ..clear()
+    ..addAll(apps);
+  return category;
+}
