@@ -43,9 +43,21 @@ class FLauncherChannel {
   Future<bool> applicationExists(String packageName) async =>
       await _methodChannel.invokeMethod('applicationExists', packageName);
 
-  Future<void> launchActivityFromAction(String action) async => await _methodChannel.invokeMethod('launchActivityFromAction', action);
+  Future<void> launchActivityFromAction(String action) async =>
+      await _methodChannel.invokeMethod('launchActivityFromAction', action);
 
   Future<void> launchApp(String packageName) async => await _methodChannel.invokeMethod('launchApp', packageName);
+
+  Future<void> launchLiveTv() async => await _methodChannel.invokeMethod('launchLiveTv');
+
+  /// Opens [deepLink] when an activity resolves it, otherwise the platform app.
+  Future<bool> openRecommendation(String? deepLink, String? packageName) async {
+    final bool? opened = await _methodChannel.invokeMethod<bool>('openRecommendation', {
+      'deepLink': deepLink,
+      'packageName': packageName,
+    });
+    return opened ?? false;
+  }
 
   Future<void> openSettings() async => await _methodChannel.invokeMethod('openSettings');
 

@@ -16,8 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-class App
-{
+class App {
   final String name;
 
   final String packageName;
@@ -28,28 +27,26 @@ class App
 
   bool sideloaded;
 
+  /// True when this tile launches the device live TV / tuner activity.
+  bool liveTv;
+
   Map<int, int> categoryOrders;
 
   String? action;
 
-  App({
-    required this.packageName,
-    required this.name,
-    required this.version,
-    required this.hidden,
-    this.action = null
-  }):
-    categoryOrders = Map(),
-    sideloaded = false;
+  App({required this.packageName, required this.name, required this.version, required this.hidden, this.action = null})
+      : categoryOrders = Map(),
+        sideloaded = false,
+        liveTv = false;
 
-  App.fromSystem(Map<dynamic, dynamic> data):
-    packageName = data['packageName'],
-    name = data['name'],
-    version = data['version'],
-    hidden = false,
-    sideloaded = data['sideloaded'],
-    categoryOrders = Map() {
-
+  App.fromSystem(Map<dynamic, dynamic> data)
+      : packageName = data['packageName'],
+        name = data['name'],
+        version = data['version'] ?? "",
+        hidden = false,
+        sideloaded = data['sideloaded'] == true,
+        liveTv = data['liveTv'] == true,
+        categoryOrders = Map() {
     if (data.containsKey('action')) {
       action = data['action'];
     }
