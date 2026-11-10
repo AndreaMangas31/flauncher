@@ -17,6 +17,7 @@
  */
 
 import 'package:flauncher/default_layout.dart';
+import 'package:flauncher/home_focus.dart';
 import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/widgets/app_card.dart';
 import 'package:flauncher/widgets/inputs_picker.dart';
@@ -63,48 +64,53 @@ class CategoryRow extends StatelessWidget {
             reservedSlots: leading,
           );
           final int hidden = applications.length - visible;
-          return SizedBox(
-            height: _rowHeight,
-            child: ListView.custom(
-              padding: const EdgeInsets.all(8),
-              scrollDirection: Axis.horizontal,
-              clipBehavior: Clip.none,
-              childrenDelegate: SliverChildBuilderDelegate(
-                childCount: leading + visible + (hidden > 0 ? 1 : 0),
-                findChildIndexCallback: _findChildIndex,
-                addRepaintBoundaries: true,
-                (context, index) {
-                  if (_inputsFirst && index == 0) {
-                    return const Padding(
-                      key: Key('inputs-tile'),
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      child: InputsTile(),
-                    );
-                  }
-                  final int appIndex = index - leading;
-                  if (appIndex >= visible) {
+          return HomeRow(
+            builder: (ScrollController controller) => SizedBox(
+              height: _rowHeight,
+              child: ListView.custom(
+                key: _inputsFirst ? const Key('apps-row-scroll') : null,
+                controller: controller,
+                padding: const EdgeInsets.all(8),
+                scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
+                childrenDelegate: SliverChildBuilderDelegate(
+                  childCount: leading + visible + (hidden > 0 ? 1 : 0),
+                  findChildIndexCallback: _findChildIndex,
+                  addRepaintBoundaries: true,
+                  (context, index) {
+                    if (_inputsFirst && index == 0) {
+                      return const Padding(
+                        key: Key('inputs-tile'),
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: InputsTile(),
+                      );
+                    }
+                    final int appIndex = index - leading;
+                    if (appIndex >= visible) {
+                      return Padding(
+                        key: const Key('more-apps'),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: MoreAppsTile(
+                          category: category,
+                          hiddenApplications: applications.sublist(visible),
+                          indexOffset: visible,
+                        ),
+                      );
+                    }
                     return Padding(
-                      key: const Key('more-apps'),
+                      key: Key(applications[appIndex].packageName),
                       padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: MoreAppsTile(
+                      child: AppCard(
                         category: category,
-                        hiddenApplications: applications.sublist(visible),
-                        indexOffset: visible,
+                        application: applications[appIndex],
+                        autofocus: !_inputsFirst && appIndex == 0,
+                        onMove: (direction) =>
+                            _onMove(context, direction, appIndex),
+                        onMoveEnd: () => _onMoveEnd(context),
                       ),
                     );
-                  }
-                  return Padding(
-                    key: Key(applications[appIndex].packageName),
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: AppCard(
-                      category: category,
-                      application: applications[appIndex],
-                      autofocus: !_inputsFirst && appIndex == 0,
-                      onMove: (direction) => _onMove(context, direction, appIndex),
-                      onMoveEnd: () => _onMoveEnd(context),
-                    ),
-                  );
-                },
+                  },
+                ),
               ),
             ),
           );
@@ -136,8 +142,8 @@ class CategoryRow extends StatelessWidget {
     if (key.value == 'inputs-tile') {
       return _inputsFirst ? 0 : null;
     }
-    final int index = applications
-        .indexWhere((app) => app.packageName == key.value);
+    final int index =
+        applications.indexWhere((app) => app.packageName == key.value);
     if (index < 0) {
       return null;
     }

@@ -44,12 +44,23 @@ void clearLauncherImageCache() {
   cache.clearLiveImages();
 }
 
-/// Android [Activity.onTrimMemory] calls this on the method channel.
+/// Screen-on, dream end, and the Home key. Set by the home focus host.
+VoidCallback? _onReturnHome;
+
+void setHomeReturnHandler(VoidCallback? handler) {
+  _onReturnHome = handler;
+}
+
+/// Android [Activity.onTrimMemory] and the home-return signals share this
+/// channel. One handler so the two callers do not replace each other.
 void listenForTrimMemory() {
   const MethodChannel('me.efesser.flauncher/method')
       .setMethodCallHandler((MethodCall call) async {
-    if (call.method == 'trimMemory') {
-      clearLauncherImageCache();
+    switch (call.method) {
+      case 'trimMemory':
+        clearLauncherImageCache();
+      case 'returnHome':
+        _onReturnHome?.call();
     }
     return null;
   });
