@@ -1,33 +1,94 @@
 {
-  "updatedAt": "2026-11-10T00:00:00Z",
+  "updatedAt": "2026-11-10T21:17:02+01:00",
   "items": [
     {
-      "title": "Ejemplo: serie de placeholder",
-      "description": "Entrada de ejemplo. Sustituye este feed por recomendaciones reales de series.",
+      "title": "El plan del diablo (temporada 3)",
+      "description": "Vuelve el reality coreano de estrategia: dieciséis concursantes se enfrentan en pruebas de ingenio, alianzas y faroles. La temporada Dead Again se estrena hoy en Netflix España.",
       "platform": "Netflix",
       "type": "serie",
-      "status": "en emisión",
-      "imageUrl": "https://placehold.co/300x450/png?text=Serie",
-      "deepLink": "https://www.netflix.com/title/80057281",
+      "status": "estreno",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/pLchMEuUbr4sbpCSNsQXCD0l5E7.jpg",
+      "deepLink": "https://www.netflix.com/es/title/81653386",
       "packageName": "com.netflix.ninja"
     },
     {
-      "title": "Ejemplo: película de placeholder",
-      "description": "Segunda entrada de ejemplo para probar el foco del mando y la ficha.",
+      "title": "VisionQuest",
+      "description": "Paul Bettany regresa como Visión en la serie de Marvel que cierra la trilogía de Bruja Escarlata y Visión. Un Visión reiniciado huye con Thomas Shepherd mientras intenta entender quién es, y el final llega el 11 de noviembre.",
       "platform": "Disney+",
-      "type": "película",
-      "status": "estreno",
-      "imageUrl": "https://placehold.co/300x450/png?text=Pelicula",
-      "deepLink": "https://www.disneyplus.com/",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/hXlvDq98VMg3WJWTDzwcPeMk39A.jpg",
+      "deepLink": "https://www.disneyplus.com/es-es/browse/entity-8744ec55-8d14-4631-99b4-c889a2d6013f",
       "packageName": "com.disney.disneyplus"
     },
     {
-      "title": "Ejemplo: anime de placeholder",
-      "description": "Tercera entrada de ejemplo. El enlace es opcional; si no abre, se lanza la app.",
+      "title": "Black Clover (temporada 2)",
+      "description": "Asta y los Caballeros Mágicos regresan con más fantasía y acción en Crunchyroll. El simulcast de la segunda temporada sigue en marcha; el episodio 7 llega el 14 de noviembre.",
       "platform": "Crunchyroll",
       "type": "serie",
       "status": "en emisión",
-      "imageUrl": "https://placehold.co/300x450/png?text=Anime",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/caWtp9F4m5Ef2MTAmnSnqpqjT8i.jpg",
+      "deepLink": "https://www.crunchyroll.com/es-es/series/GRE50KV36/black-clover",
+      "packageName": "com.crunchyroll.crunchyroid"
+    },
+    {
+      "title": "Las Kardashian (temporada 8)",
+      "description": "Kris, Kim, Kourtney, Khloé, Kendall y Kylie vuelven con una temporada centrada en el amor, la reinvención y sus nuevos rumbos. Se estrenó el 8 de octubre en Disney+ España, con episodios nuevos cada miércoles.",
+      "platform": "Disney+",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/g1U84qP4B4Y51tU0El8Y6s30KE2.jpg",
+      "deepLink": "https://www.disneyplus.com/es-es/browse/entity-7840bf30-f440-48d4-bf81-55d8cb24457a",
+      "packageName": "com.disney.disneyplus"
+    },
+    {
+      "title": "Dragon Ball Super: Beerus",
+      "description": "La batalla contra el Dios de la Destrucción se recuenta en esta serie semanal. En España, Crunchyroll la emite en simulcast cada domingo; el episodio 5 se estrenó el 8 de noviembre.",
+      "platform": "Crunchyroll",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/AojgldgsOlzZV8ahyOzaiAjJWvV.jpg",
+      "deepLink": "https://www.crunchyroll.com/es-es/series/GT00389311/dragon-ball-super-beerus",
+      "packageName": "com.crunchyroll.crunchyroid"
+    },
+    {
+      "title": "La emperatriz divorciada",
+      "description": "Adaptación del webtoon de NAVER: la emperatriz Navier acepta el divorcio a cambio de poder volver a casarse y recuperar su poder. Llegó el 3 de noviembre a Disney+ España y sigue estrenando episodios cada miércoles.",
+      "platform": "Disney+",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/7cS90VaWOqQhgmsT0FYXYmIMcRp.jpg",
+      "deepLink": "https://www.disneyplus.com/es-es/browse/entity-b02d61cd-3aab-4412-b33d-3512712a91f0",
+      "packageName": "com.disney.disneyplus"
+    },
+    {
+      "title": "Magic Knight Rayearth (2026)",
+      "description": "El remake de las Guerreras Mágicas de los 90: tres chicas son invocadas a un mundo de fantasía para salvar el reino de Cephiro. Se estrenó el 7 de octubre y sigue en emisión en Crunchyroll.",
+      "platform": "Crunchyroll",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/evpXDaPMlXgudEIMe1Lxdql3Jmu.jpg",
+      "deepLink": "https://www.crunchyroll.com/es-es/series/GT00383994/magic-knight-rayearth-2026",
+      "packageName": "com.crunchyroll.crunchyroid"
+    },
+    {
+      "title": "Los siete caballeros del Reino Marronnier",
+      "description": "Anime de fantasía en el que los siete príncipes de Marronnier parten como embajadores a los reinos vecinos. Se emite en Prime Video España desde el 3 de octubre, con capítulos semanales.",
+      "platform": "Prime Video",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/xev0hYJm5F2VaH6XxM8wqSDYgQg.jpg",
+      "deepLink": "https://www.primevideo.com/-/es/detail/0MWCE6QKWI8NTMW0R53A91T2HY",
+      "packageName": "com.amazon.amazonvideo.livingroom"
+    },
+    {
+      "title": "Los diarios de la boticaria (temporada 3)",
+      "description": "Maomao sigue usando su ingenio de boticaria en la corte imperial, ahora ante rumores y amenazas que van más allá del palacio. La temporada 3 se emite cada viernes en Crunchyroll; el episodio 7 llega el 13 de noviembre.",
+      "platform": "Crunchyroll",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/bYPACmBf5Nomw3I2IEGGTNwgvWj.jpg",
+      "deepLink": "https://www.crunchyroll.com/es-es/series/G3KHEVDJ7/the-apothecary-diaries",
       "packageName": "com.crunchyroll.crunchyroid"
     }
   ]
