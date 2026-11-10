@@ -98,12 +98,14 @@ android {
 
     splits {
         abi {
-            // Release APKs are armeabi-v7a only. This television is 32-bit,
-            // and a universal APK would ship extra ABIs it cannot load.
+            // Only the 32-bit ABI this television can load. universalApk stays
+            // on so Gradle still writes app-release.apk; with it off, Flutter
+            // 3.24 looks for that name and reports that no APK was produced.
+            // The universal file contains only the ABI included below.
             enable gradle.startParameter.taskNames.any { it.contains("assembleRelease") }
             reset()
             include "armeabi-v7a"
-            universalApk false
+            universalApk true
         }
     }
 
