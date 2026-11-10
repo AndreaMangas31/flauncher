@@ -316,6 +316,10 @@ class _CategorySettingsState extends State<_CategorySettings> {
                   },
                   items: [
                     DropdownMenuItem(
+                      value: CategorySort.pinnedAndRecent,
+                      child: Text(localizations.pinnedAndRecent, style: Theme.of(context).textTheme.bodySmall),
+                    ),
+                    DropdownMenuItem(
                       value: CategorySort.alphabetical,
                       child: Text(localizations.alphabetical, style: Theme.of(context).textTheme.bodySmall),
                     ),

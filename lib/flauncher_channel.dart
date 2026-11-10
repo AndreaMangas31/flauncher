@@ -77,6 +77,19 @@ class FLauncherChannel {
 
   Future<void> startAmbientMode() async => await _methodChannel.invokeMethod("startAmbientMode");
 
+  /// Null when usage access is not granted. Never throws.
+  Future<Map<String, int>?> getUsageStats() async {
+    try {
+      final Map<dynamic, dynamic>? result = await _methodChannel.invokeMethod<Map<dynamic, dynamic>>("getUsageStats");
+      if (result == null) {
+        return null;
+      }
+      return result.map((key, value) => MapEntry(key.toString(), value is num ? value.toInt() : 0));
+    } catch (_) {
+      return null;
+    }
+  }
+
   void addAppsChangedListener(void Function(Map<String, dynamic>) listener) =>
       _appsEventChannel.receiveBroadcastStream().listen((event) {
         Map<dynamic, dynamic> eventMap = event;

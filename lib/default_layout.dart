@@ -30,6 +30,27 @@ const String liveTvAction = "me.efesser.flauncher.action.LIVE_TV";
 /// YouTube and Spotify are the only apps that leave [appsCategoryName].
 bool isMusicApp(String packageName) => packageName == youtubeTvPackage || packageName == spotifyTvPackage;
 
+/// Favourites pinned at the front of Apps, after the live TV shortcut.
+/// Edit this list to change the order. Packages match the manifest queries.
+/// HBO Max is [maxPackage] (current app) then [hboNowPackage] (older app).
+const String crunchyrollPackage = "com.crunchyroll.crunchyroid";
+const String netflixPackage = "com.netflix.ninja";
+const String disneyPlusPackage = "com.disney.disneyplus";
+const String primeVideoPackage = "com.amazon.amazonvideo.livingroom";
+const String maxPackage = "com.wbd.stream";
+const String hboNowPackage = "com.hbo.hbonow";
+const String filminPackage = "com.filmin.filminapp";
+
+const List<String> pinnedFavouritePackages = [
+  crunchyrollPackage,
+  netflixPackage,
+  disneyPlusPackage,
+  primeVideoPackage,
+  maxPackage,
+  hboNowPackage,
+  filminPackage,
+];
+
 /// YouTube first, then Spotify. Anything else sorts after them.
 int musicAppRank(String packageName) {
   if (packageName == youtubeTvPackage) {

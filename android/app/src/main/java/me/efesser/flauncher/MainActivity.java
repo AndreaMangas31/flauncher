@@ -18,6 +18,9 @@
 
 package me.efesser.flauncher;
 
+import android.app.AppOpsManager;
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.*;
@@ -28,6 +31,7 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Process;
 import android.provider.Settings;
 import android.util.Pair;
 
@@ -83,6 +87,7 @@ public class MainActivity extends FlutterActivity
                 case "checkForGetContentAvailability" -> result.success(checkForGetContentAvailability());
                 case "startAmbientMode" -> result.success(startAmbientMode());
                 case "getActiveNetworkInformation" -> result.success(getActiveNetworkInformation());
+                case "getUsageStats" -> result.success(getUsageStats());
                 default -> throw new IllegalArgumentException();
             }
         });
@@ -431,6 +436,45 @@ public class MainActivity extends FlutterActivity
                 .setClassName("com.android.systemui", "com.android.systemui.Somnambulator");
 
         return tryStartActivity(intent);
+    }
+
+    /**
+     * Null when GET_USAGE_STATS is not allowed. An empty map means the
+     * permission is granted but no packages have usage yet.
+     */
+    private Map<String, Long> getUsageStats()
+    {
+        try {
+            AppOpsManager appOps = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
+            if (appOps == null) {
+                return null;
+            }
+            int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), getPackageName());
+            if (mode != AppOpsManager.MODE_ALLOWED) {
+                return null;
+            }
+
+            UsageStatsManager usageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
+            if (usageStatsManager == null) {
+                return null;
+            }
+            long end = System.currentTimeMillis();
+            long start = end - 365L * 24L * 60L * 60L * 1000L;
+            Map<String, UsageStats> stats = usageStatsManager.queryAndAggregateUsageStats(start, end);
+            Map<String, Long> lastUsed = new HashMap<>();
+            if (stats != null) {
+                for (Map.Entry<String, UsageStats> entry : stats.entrySet()) {
+                    UsageStats usage = entry.getValue();
+                    if (usage != null) {
+                        lastUsed.put(entry.getKey(), usage.getLastTimeUsed());
+                    }
+                }
+            }
+            return lastUsed;
+        }
+        catch (Throwable ignored) {
+            return null;
+        }
     }
 
     private Map<String, Object> getActiveNetworkInformation()

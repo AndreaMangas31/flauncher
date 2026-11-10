@@ -24,6 +24,7 @@ import 'package:flutter/foundation.dart' as foundation;
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
+import 'package:flauncher/default_layout.dart';
 import 'package:flauncher/models/app.dart';
 import 'package:flauncher/models/category.dart';
 
@@ -95,7 +96,7 @@ class FLauncherDatabase extends _$FLauncherDatabase
   FLauncherDatabase.inMemory() : super(LazyDatabase(() => NativeDatabase.memory()));
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -124,6 +125,14 @@ class FLauncherDatabase extends _$FLauncherDatabase
           if (from < 7) {
             await migrator.createTable(launcherSpacers);
             await migrator.dropColumn(apps, "sideloaded");
+          }
+          if (from < 8) {
+            // Previous installs seeded "Apps" as manual. Switch that default
+            // once. A category the user already set to alphabetical is left alone.
+            await customStatement(
+              "UPDATE categories SET sort = ${CategorySort.pinnedAndRecent.index} "
+              "WHERE name = '$appsCategoryName' AND sort = ${CategorySort.manual.index}",
+            );
           }
         },
         beforeOpen: (openingDetails) async {

@@ -30,6 +30,9 @@ class App {
   /// True when this tile launches the device live TV / tuner activity.
   bool liveTv;
 
+  /// Milliseconds since epoch from UsageStats, or 0 when unknown.
+  int lastTimeUsed;
+
   Map<int, int> categoryOrders;
 
   String? action;
@@ -37,7 +40,8 @@ class App {
   App({required this.packageName, required this.name, required this.version, required this.hidden, this.action = null})
       : categoryOrders = Map(),
         sideloaded = false,
-        liveTv = false;
+        liveTv = false,
+        lastTimeUsed = 0;
 
   App.fromSystem(Map<dynamic, dynamic> data)
       : packageName = data['packageName'],
@@ -46,6 +50,7 @@ class App {
         hidden = false,
         sideloaded = data['sideloaded'] == true,
         liveTv = data['liveTv'] == true,
+        lastTimeUsed = 0,
         categoryOrders = Map() {
     if (data.containsKey('action')) {
       action = data['action'];
