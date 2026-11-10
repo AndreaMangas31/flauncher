@@ -1,24 +1,27 @@
+import 'dart:async';
+
+import 'package:flauncher/theme/emerald_shrine.dart';
+import 'package:flauncher/theme/shrine_clock.dart';
 import 'package:flauncher/widgets/settings/settings_panel.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../providers/settings_service.dart';
-import 'date_time_widget.dart';
 import 'network_widget.dart';
 
-class FocusAwareAppBar extends StatefulWidget implements PreferredSizeWidget
-{
-  @override
-  State<StatefulWidget> createState() {
-    return _FocusAwareAppBarState();
-  }
+class FocusAwareAppBar extends StatefulWidget implements PreferredSizeWidget {
+  static const double barHeight = 78;
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  State<StatefulWidget> createState() => _FocusAwareAppBarState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(barHeight);
 }
 
-class _FocusAwareAppBarState extends State<FocusAwareAppBar>
-{
+class _FocusAwareAppBarState extends State<FocusAwareAppBar> {
   bool focused = false;
 
   @override
@@ -29,91 +32,198 @@ class _FocusAwareAppBarState extends State<FocusAwareAppBar>
         if (autoHide) {
           return Focus(
             canRequestFocus: false,
+            onFocusChange: (hasFocus) => setState(() => focused = hasFocus),
             child: AnimatedContainer(
-              curve: Curves.decelerate,
-              duration: Duration(milliseconds: 250),
-              height: focused ? kToolbarHeight : 0,
-              child: widget!
+              curve: Curves.easeOut,
+              duration: const Duration(milliseconds: 250),
+              height: focused ? FocusAwareAppBar.barHeight : 0,
+              child: widget!,
             ),
-            onFocusChange: (hasFocus) {
-              this.setState(() {
-                focused = hasFocus;
-              });
-            }
           );
         }
 
         return widget!;
       },
-      child: AppBar(
-        actions: [
-          IconButton(
-            padding: const EdgeInsets.all(2),
-            constraints: const BoxConstraints(),
-            splashRadius: 20,
-            icon: const Icon(Icons.settings_outlined,
-              shadows: [
-                Shadow(color: Colors.black54, blurRadius: 8, offset: Offset(0, 2))
+      child: const _EmeraldStatusBar(),
+    );
+  }
+}
+
+class _EmeraldStatusBar extends StatelessWidget {
+  const _EmeraldStatusBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return Selector<
+        SettingsService,
+        ({
+          bool showDateInStatusBar,
+          bool showTimeInStatusBar,
+          String timeFormat,
+        })>(
+      selector: (context, service) => (
+        showDateInStatusBar: service.showDateInStatusBar,
+        showTimeInStatusBar: service.showTimeInStatusBar,
+        timeFormat: service.timeFormat,
+      ),
+      builder: (context, settings, _) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(28, 10, 24, 6),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (settings.showTimeInStatusBar)
+                _StatusTime(format: settings.timeFormat),
+              if (settings.showTimeInStatusBar &&
+                  settings.showDateInStatusBar) ...[
+                const SizedBox(width: 16),
+                Container(
+                  width: 1,
+                  height: 28,
+                  color: EmeraldShrine.secondaryText.withOpacity(0.45),
+                ),
+                const SizedBox(width: 16),
               ],
-            ),
-            onPressed: () => showDialog(context: context, builder: (_) => const SettingsPanel()),
-            // sometime after Flutter 3.7.5, no later than 3.16.8, the focus highlight went away
-            focusColor: Theme.of(context).primaryColorLight,
+              if (settings.showDateInStatusBar)
+                const Flexible(child: _StatusDate()),
+              const Spacer(),
+              const NetworkWidget(),
+              const SizedBox(width: 18),
+              const _AjustesButton(),
+            ],
           ),
-          const Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: NetworkWidget(),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 16, right: 32),
-            child: Selector<SettingsService,
-                ({
-                  bool showDateInStatusBar,
-                  bool showTimeInStatusBar,
-                  String dateFormat,
-                  String timeFormat })>(
-              selector: (context, service) => (
-              showDateInStatusBar: service.showDateInStatusBar,
-              showTimeInStatusBar: service.showTimeInStatusBar,
-              dateFormat: service.dateFormat,
-              timeFormat: service.timeFormat),
-              builder: (context, dateTimeSettings, _) {
-                // TODO: Disabling the "show date" option while both are enabled causes the *time* to disappear,
-                // then re-enabling that same option causes the time to appear twice.
-                // A restart (or just changing to the full screen clock) fixes the issue, but why does this happen?
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (dateTimeSettings.showDateInStatusBar)
-                      Flexible(
-                          child: DateTimeWidget(dateTimeSettings.dateFormat,
-                            updateInterval: const Duration(minutes: 1),
-                            textStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
-                              shadows: [
-                                const Shadow(color: Colors.black54, offset: Offset(0, 2), blurRadius: 8)
-                              ],
-                            ),
-                          )
-                      ),
-                    if (dateTimeSettings.showDateInStatusBar && dateTimeSettings.showTimeInStatusBar)
-                      const SizedBox(width: 16),
-                    if (dateTimeSettings.showTimeInStatusBar)
-                      Flexible(
-                        child: DateTimeWidget(dateTimeSettings.timeFormat,
-                          textStyle: Theme.of(context).textTheme.titleLarge!.copyWith(
-                            shadows: [
-                              const Shadow(color: Colors.black54, offset: Offset(0, 2), blurRadius: 8)
-                            ],
-                          )
-                        )
-                      )
-                  ]
-                );
-              },
-            ),
-          ),
-        ],
-      )
+        );
+      },
+    );
+  }
+}
+
+class _StatusTime extends StatefulWidget {
+  final String format;
+
+  const _StatusTime({required this.format});
+
+  @override
+  State<_StatusTime> createState() => _StatusTimeState();
+}
+
+class _StatusTimeState extends State<_StatusTime> {
+  late DateTime _now;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _now = DateTime.now();
+    // Once a minute is enough for an hours-and-minutes clock, and it stays
+    // off the 30s pumps the home tests use.
+    _timer = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _now = DateTime.now());
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      _format(_now, widget.format),
+      style: EmeraldShrine.heading(fontSize: 40),
+    );
+  }
+
+  String _format(DateTime time, String pattern) {
+    try {
+      return DateFormat(pattern).format(time);
+    } catch (_) {
+      final String hour = time.hour.toString();
+      final String minute = time.minute.toString().padLeft(2, '0');
+      return '$hour:$minute';
+    }
+  }
+}
+
+class _StatusDate extends StatefulWidget {
+  const _StatusDate();
+
+  @override
+  State<_StatusDate> createState() => _StatusDateState();
+}
+
+class _StatusDateState extends State<_StatusDate> {
+  late DateTime _now;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _now = DateTime.now();
+    _timer = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _now = DateTime.now());
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      formatShrineDate(_now),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style:
+          EmeraldShrine.body(fontSize: 20, color: EmeraldShrine.secondaryText),
+    );
+  }
+}
+
+class _AjustesButton extends StatelessWidget {
+  const _AjustesButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+    return TextButton.icon(
+      key: const Key('settings-button'),
+      style: ButtonStyle(
+        foregroundColor: const WidgetStatePropertyAll(EmeraldShrine.text),
+        padding: const WidgetStatePropertyAll(
+            EdgeInsets.symmetric(horizontal: 16, vertical: 10)),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        ),
+        backgroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.focused)) {
+            return EmeraldShrine.accent.withOpacity(0.18);
+          }
+          return EmeraldShrine.surfaceTint;
+        }),
+        side: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.focused)) {
+            return const BorderSide(color: EmeraldShrine.accent, width: 2);
+          }
+          return BorderSide(color: Colors.white.withOpacity(0.10));
+        }),
+      ),
+      icon: const Icon(Icons.settings_outlined),
+      label:
+          Text(localizations.settings, style: EmeraldShrine.body(fontSize: 16)),
+      onPressed: () =>
+          showDialog(context: context, builder: (_) => const SettingsPanel()),
     );
   }
 }

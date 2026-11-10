@@ -18,14 +18,24 @@
 
 import 'package:flauncher/models/recommendation.dart';
 import 'package:flauncher/providers/recommendations_service.dart';
+import 'package:flauncher/theme/emerald_shrine.dart';
 import 'package:flauncher/widgets/ensure_visible.dart';
+import 'package:flauncher/widgets/section_heading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
-/// Non-editable row pinned under every launcher category.
-class RecommendationsRow extends StatelessWidget {
+/// Portrait posters pinned under the categories. The strip under the row
+/// follows whichever poster has focus.
+class RecommendationsRow extends StatefulWidget {
   const RecommendationsRow({super.key});
+
+  @override
+  State<RecommendationsRow> createState() => _RecommendationsRowState();
+}
+
+class _RecommendationsRowState extends State<RecommendationsRow> {
+  int _focusedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -35,32 +45,38 @@ class RecommendationsRow extends StatelessWidget {
         if (items.isEmpty) {
           return const SizedBox.shrink();
         }
+        if (_focusedIndex >= items.length) {
+          _focusedIndex = 0;
+        }
 
         final AppLocalizations localizations = AppLocalizations.of(context)!;
+        final Recommendation focused = items[_focusedIndex];
         return Padding(
-          padding: const EdgeInsets.only(top: 8, bottom: 24),
+          padding: const EdgeInsets.only(top: 12, bottom: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 16, bottom: 8),
-                child: Text(
-                  localizations.recommendationsRow,
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    shadows: const [Shadow(color: Colors.black54, offset: Offset(1, 1), blurRadius: 8)],
+              SectionHeading(localizations.recommendationsRow),
+              SizedBox(
+                height: 248,
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 12),
+                  scrollDirection: Axis.horizontal,
+                  clipBehavior: Clip.none,
+                  itemCount: items.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 14),
+                  itemBuilder: (context, index) => _RecommendationPoster(
+                    item: items[index],
+                    autofocus: index == 0,
+                    onFocused: () {
+                      if (_focusedIndex != index) {
+                        setState(() => _focusedIndex = index);
+                      }
+                    },
                   ),
                 ),
               ),
-              SizedBox(
-                height: 230,
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: items.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
-                  itemBuilder: (context, index) => _RecommendationCard(item: items[index]),
-                ),
-              ),
+              _DetailStrip(item: focused),
             ],
           ),
         );
@@ -69,16 +85,67 @@ class RecommendationsRow extends StatelessWidget {
   }
 }
 
-class _RecommendationCard extends StatefulWidget {
+class _DetailStrip extends StatelessWidget {
   final Recommendation item;
 
-  const _RecommendationCard({required this.item});
+  const _DetailStrip({required this.item});
 
   @override
-  State<_RecommendationCard> createState() => _RecommendationCardState();
+  Widget build(BuildContext context) {
+    return Container(
+      key: const Key('recommendation-detail'),
+      margin: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      decoration: BoxDecoration(
+        color: EmeraldShrine.surface.withOpacity(0.78),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 280,
+            child: Text(
+              item.title,
+              key: const Key('recommendation-detail-title'),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: EmeraldShrine.posterTitle(fontSize: 20),
+            ),
+          ),
+          const SizedBox(width: 24),
+          Expanded(
+            child: Text(
+              item.description,
+              key: const Key('recommendation-detail-description'),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: EmeraldShrine.body(
+                  fontSize: 15, color: EmeraldShrine.secondaryText),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _RecommendationCardState extends State<_RecommendationCard> {
+class _RecommendationPoster extends StatefulWidget {
+  final Recommendation item;
+  final bool autofocus;
+  final VoidCallback onFocused;
+
+  const _RecommendationPoster({
+    required this.item,
+    required this.autofocus,
+    required this.onFocused,
+  });
+
+  @override
+  State<_RecommendationPoster> createState() => _RecommendationPosterState();
+}
+
+class _RecommendationPosterState extends State<_RecommendationPoster> {
   bool _focused = false;
 
   @override
@@ -86,80 +153,80 @@ class _RecommendationCardState extends State<_RecommendationCard> {
     final Recommendation item = widget.item;
     return EnsureVisible(
       alignment: 0.5,
-      child: SizedBox(
-        width: 148,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(8),
-            onFocusChange: (focused) => setState(() => _focused = focused),
-            onTap: () => context.read<RecommendationsService>().open(item),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              transform: Matrix4.diagonal3Values(_focused ? 1.04 : 1, _focused ? 1.04 : 1, 1),
-              transformAlignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: _focused ? Colors.white : Colors.white24, width: _focused ? 2 : 1),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        _poster(item),
-                        Positioned(
-                          top: 6,
-                          left: 6,
-                          right: 6,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: _badge(item.platform),
-                          ),
-                        ),
-                        if (_focused)
-                          Positioned(
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            child: Container(
-                              color: Colors.black.withOpacity(0.82),
-                              padding: const EdgeInsets.all(8),
-                              child: Text(
-                                item.description,
-                                maxLines: 4,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
+      child: AnimatedScale(
+        scale: _focused ? 1.05 : 1,
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        alignment: Alignment.center,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          width: 156,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(EmeraldShrine.posterRadius),
+            boxShadow: _focused ? EmeraldShrine.focusShadows : const [],
+          ),
+          child: Material(
+            color: EmeraldShrine.surface,
+            borderRadius: BorderRadius.circular(EmeraldShrine.posterRadius),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              autofocus: widget.autofocus,
+              focusColor: Colors.transparent,
+              onFocusChange: (focused) {
+                setState(() => _focused = focused);
+                if (focused) {
+                  widget.onFocused();
+                }
+              },
+              onTap: () => context.read<RecommendationsService>().open(item),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius:
+                      BorderRadius.circular(EmeraldShrine.posterRadius),
+                  border: Border.all(
+                    color: _focused ? EmeraldShrine.accent : Colors.transparent,
+                    width: 2,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _poster(item),
+                    const DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0x000E1111),
+                            Color(0x000E1111),
+                            Color(0xF20E1111)
+                          ],
+                          stops: [0.0, 0.45, 1.0],
                         ),
-                        Text(
-                          "${item.type} · ${item.status}",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.white70),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
+                    Positioned(
+                      left: 10,
+                      right: 10,
+                      bottom: 10,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            item.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: EmeraldShrine.posterTitle(fontSize: 15),
+                          ),
+                          const SizedBox(height: 6),
+                          _PlatformChip(platform: item.platform),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -172,60 +239,60 @@ class _RecommendationCardState extends State<_RecommendationCard> {
     return Image.network(
       item.imageUrl,
       fit: BoxFit.cover,
+      cacheWidth: 360,
+      gaplessPlayback: true,
+      filterQuality: FilterQuality.medium,
       errorBuilder: (_, __, ___) => _placeholder(item),
-      loadingBuilder: (context, child, progress) {
-        if (progress == null) {
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+        if (wasSynchronouslyLoaded || frame != null) {
           return child;
         }
-        return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+        return const ColoredBox(color: EmeraldShrine.surface);
       },
     );
   }
 
   Widget _placeholder(Recommendation item) {
     return ColoredBox(
-      color: const Color(0xFF033662),
+      color: EmeraldShrine.surface,
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Text(item.platform, textAlign: TextAlign.center),
+          padding: const EdgeInsets.all(12),
+          child: Text(
+            item.platform,
+            textAlign: TextAlign.center,
+            style: EmeraldShrine.body(
+                fontSize: 13, color: EmeraldShrine.secondaryText),
+          ),
         ),
       ),
     );
   }
+}
 
-  Widget _badge(String platform) {
+class _PlatformChip extends StatelessWidget {
+  final String platform;
+
+  const _PlatformChip({required this.platform});
+
+  @override
+  Widget build(BuildContext context) {
+    final Color color = recommendationPlatformColor(platform);
+    final bool darkChip = color.computeLuminance() < 0.2;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: _platformColor(platform),
-        borderRadius: BorderRadius.circular(4),
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+        border:
+            darkChip ? Border.all(color: Colors.white.withOpacity(0.28)) : null,
       ),
       child: Text(
         platform,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.white),
+        style: EmeraldShrine.body(fontSize: 11, color: Colors.white),
       ),
     );
-  }
-
-  Color _platformColor(String platform) {
-    switch (platform.toLowerCase()) {
-      case "netflix":
-        return const Color(0xFFE50914);
-      case "crunchyroll":
-        return const Color(0xFFF47521);
-      case "disney+":
-        return const Color(0xFF113CCF);
-      case "prime video":
-        return const Color(0xFF00A8E1);
-      case "hbo max":
-        return const Color(0xFFB535F6);
-      case "filmin":
-        return const Color(0xFFFF5A1F);
-      default:
-        return Colors.black87;
-    }
   }
 }

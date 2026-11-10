@@ -107,5 +107,7 @@
     "withEllipsisAddTo": "Añadir a...",
     "showRecommendations": "Mostrar Recomendadas por Senku",
     "recommendationsFeedUrl": "URL del feed de recomendaciones",
-    "recommendationsRow": "Recomendadas por Senku"
+    "recommendationsRow": "Recomendadas por Senku",
+    "moreApps": "Más apps",
+    "moreAppsRecent": "recientes"
 }

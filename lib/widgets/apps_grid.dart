@@ -27,9 +27,9 @@ import '../models/app.dart';
 import '../models/category.dart';
 import '../providers/settings_service.dart';
 import 'category_container_common.dart';
+import 'section_heading.dart';
 
-class AppsGrid extends StatelessWidget
-{
+class AppsGrid extends StatelessWidget {
   final Category category;
   final List<App> applications;
 
@@ -44,60 +44,48 @@ class AppsGrid extends StatelessWidget
     Widget categoryContent;
     if (applications.isEmpty) {
       categoryContent = categoryContainerEmptyState(context);
-    }
-    else {
+    } else {
       categoryContent = GridView.custom(
-        primary: false,
-        shrinkWrap: true,
-        gridDelegate: _buildSliverGridDelegate(),
-        padding: EdgeInsets.all(16),
-        childrenDelegate: SliverChildBuilderDelegate(
-          childCount: applications.length,
-          findChildIndexCallback: _findChildIndex,
-          (context, index) => AppCard(
-              key: Key(applications[index].packageName),
-              category: category,
-              application: applications[index],
-              autofocus: index == 0,
-              onMove: (direction) => _onMove(context, direction, index),
-              onMoveEnd: () => _saveOrder(context)
-          )
-        )
-      );
+          primary: false,
+          shrinkWrap: true,
+          gridDelegate: _buildSliverGridDelegate(),
+          padding: EdgeInsets.all(16),
+          childrenDelegate: SliverChildBuilderDelegate(
+              childCount: applications.length,
+              findChildIndexCallback: _findChildIndex,
+              (context, index) => AppCard(
+                  key: Key(applications[index].packageName),
+                  category: category,
+                  application: applications[index],
+                  autofocus: index == 0,
+                  onMove: (direction) => _onMove(context, direction, index),
+                  onMoveEnd: () => _saveOrder(context))));
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Selector<SettingsService, bool>(
-          selector: (context, service) => service.showCategoryTitles,
-          builder: (context, showCategoriesTitle, _) {
-            if (showCategoriesTitle) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 16, bottom: 8),
-                child: Text(category.name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge!
-                      .copyWith(shadows: [const Shadow(color: Colors.black54, offset: Offset(1, 1), blurRadius: 8)])
-                ),
-              );
-            }
+            selector: (context, service) => service.showCategoryTitles,
+            builder: (context, showCategoriesTitle, _) {
+              if (showCategoriesTitle) {
+                return SectionHeading(category.name);
+              }
 
-            return SizedBox.shrink();
-          }
-        ),
+              return SizedBox.shrink();
+            }),
         categoryContent
       ],
     );
   }
 
-  int _findChildIndex(Key key) =>
-      applications.indexWhere((app) => app.packageName == (key as ValueKey<String>).value);
+  int _findChildIndex(Key key) => applications
+      .indexWhere((app) => app.packageName == (key as ValueKey<String>).value);
 
   void _onMove(BuildContext context, AxisDirection direction, int index) {
     final currentRow = (index / category.columnsCount).floor();
-    final totalRows = ((applications.length - 1) / category.columnsCount).floor();
+    final totalRows =
+        ((applications.length - 1) / category.columnsCount).floor();
 
     int? newIndex;
     switch (direction) {
@@ -113,7 +101,8 @@ class AppsGrid extends StatelessWidget
         break;
       case AxisDirection.down:
         if (currentRow < totalRows) {
-          newIndex = min(index + category.columnsCount, applications.length - 1);
+          newIndex =
+              min(index + category.columnsCount, applications.length - 1);
         }
         break;
       case AxisDirection.left:
@@ -133,11 +122,11 @@ class AppsGrid extends StatelessWidget
     appsService.saveApplicationOrderInCategory(category);
   }
 
-  SliverGridDelegate _buildSliverGridDelegate() => SliverGridDelegateWithFixedCrossAxisCount(
+  SliverGridDelegate _buildSliverGridDelegate() =>
+      SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: category.columnsCount,
         childAspectRatio: 16 / 9,
         mainAxisSpacing: 16,
         crossAxisSpacing: 16,
       );
-
 }
