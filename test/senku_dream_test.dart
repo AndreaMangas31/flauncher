@@ -52,6 +52,11 @@ void main() {
     expect(items.single.title, "Black Clover T2");
     expect(recommendationsFromCache(null), isEmpty);
     expect(recommendationsFromCache("not json"), isEmpty);
+    const String withGenres = '''
+{"updatedAt":"2026-11-10T21:00:00Z","items":[
+  {"title":"Black Clover T2","description":"Magic battles.","platform":"Crunchyroll","type":"serie","status":"airing","imageUrl":"https://example.com/a.jpg","genres":["Acción","Anime"]}
+]}''';
+    expect(recommendationsFromCache(withGenres).single.genres, ["Acción", "Anime"]);
   });
 
   test("clock drift and poster zoom stay small", () {
@@ -91,6 +96,10 @@ void main() {
       expect(find.text("Black Clover T2"), findsOneWidget);
       expect(find.text("Crunchyroll"), findsOneWidget);
       expect(find.text("Magic battles."), findsOneWidget);
+      expect(find.text("Pantalla bloqueada"), findsOneWidget);
+      expect(find.text("Pulsa OK para desbloquear"), findsOneWidget);
+      expect(find.text("Continuar viendo"), findsNothing);
+      expect(find.byKey(const Key("dream-genres")), findsNothing);
     });
   });
 
@@ -145,6 +154,7 @@ void main() {
       expect(find.text("La emperatriz divorciada"), findsWidgets);
       expect(find.text("A court romance."), findsWidgets);
       expect(find.text("Disney+"), findsWidgets);
+      expect(find.text("Continuar viendo"), findsNothing);
     });
   });
 
@@ -172,6 +182,7 @@ void main() {
               type: "serie",
               status: "airing",
               imageUrl: "https://example.com/a.jpg",
+              genres: ["Acción"],
             ),
           ],
         ),
@@ -193,6 +204,9 @@ void main() {
           tester.widget(find.byKey(const Key("dream-description")));
       expect(synopsisText.maxLines, 3);
       expect(synopsisText.overflow, TextOverflow.ellipsis);
+      expect(find.text("Acción"), findsOneWidget);
+      expect(find.text("Continuar viendo"), findsNothing);
+      expect(find.text("Pantalla bloqueada"), findsOneWidget);
 
       for (final String sample in ["23:53", "Netflix", synopsis]) {
         final RenderParagraph paragraph = tester.renderObject(find.text(sample));
