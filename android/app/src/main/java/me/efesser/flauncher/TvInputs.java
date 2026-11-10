@@ -115,15 +115,15 @@ final class TvInputs {
     }
 
     private static boolean isCecChild(TvInputInfo input) {
+        // Hardware ports are .../HW5. MediaTek CEC devices are .../HDMI100004.
         String id = input.getId();
         if (id != null && id.contains("/HDMI")) {
             return true;
         }
+        // getParentId() is the public signal that this input hangs off another
+        // HDMI port. getHdmiDeviceInfo() is @SystemApi and is not in the SDK.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            if (input.getParentId() != null) {
-                return true;
-            }
-            return input.getHdmiDeviceInfo() != null;
+            return input.getParentId() != null;
         }
         return false;
     }
