@@ -87,7 +87,9 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // R8 with optimizations. The keep rules still retain Flutter and
+            // the dream service, which the system starts by class name.
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             // This fork often has no upload keystore. The debug key still produces
             // an APK that adb can install. It cannot update a build signed with another key.
             signingConfig hasReleaseKeystore ? signingConfigs.release : signingConfigs.debug
@@ -96,9 +98,12 @@ android {
 
     splits {
         abi {
-            // https://stackoverflow.com/a/39950584/21037183
+            // Release APKs are armeabi-v7a only. This television is 32-bit,
+            // and a universal APK would ship extra ABIs it cannot load.
             enable gradle.startParameter.taskNames.any { it.contains("assembleRelease") }
-            universalApk true
+            reset()
+            include "armeabi-v7a"
+            universalApk false
         }
     }
 
