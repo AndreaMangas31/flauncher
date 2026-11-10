@@ -23,6 +23,7 @@ import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/providers/launcher_state.dart';
 import 'package:flauncher/providers/wallpaper_service.dart';
 import 'package:flauncher/theme/emerald_shrine.dart';
+import 'package:flauncher/home_focus.dart';
 import 'package:flauncher/widgets/app_row_fit.dart';
 import 'package:flauncher/widgets/apps_grid.dart';
 import 'package:flauncher/widgets/category_row.dart';
@@ -40,51 +41,56 @@ class FLauncher extends StatelessWidget {
   const FLauncher();
 
   @override
-  Widget build(BuildContext context) => FocusTraversalGroup(
-      policy: RowByRowTraversalPolicy(),
-      child: Stack(children: [
-        Consumer<WallpaperService>(
-            builder: (_, wallpaperService, __) =>
-                _wallpaper(context, wallpaperService)),
-        Consumer<LauncherState>(
-            builder: (_, state, child) => Visibility(
-                child: child!,
-                replacement: const Center(child: AlternativeLauncherView()),
-                visible: state.launcherVisible),
-            child: Scaffold(
-                backgroundColor: Colors.transparent,
-                body: Consumer<AppsService>(
-                    builder: (context, appsService, _) {
-                  if (!appsService.initialized) {
-                    return _emptyState(context);
-                  }
-                  return LayoutBuilder(
-                    builder: (context, constraints) {
-                      final int rowCount = appsService.launcherSections
-                          .whereType<Category>()
-                          .where((category) => category.type == CategoryType.row)
-                          .length;
-                      final double barHeight =
-                          constraints.maxHeight < 600 ? 52 : FocusAwareAppBar.barHeight;
-                      final double rowHeight = homeRowHeight(
-                        rowWidth: max(0, constraints.maxWidth - 32),
-                        bodyHeight: max(0, constraints.maxHeight - barHeight - 8),
-                        rowCount: rowCount,
+  Widget build(BuildContext context) => HomeFocusHost(
+      child: FocusTraversalGroup(
+          policy: RowByRowTraversalPolicy(),
+          child: Stack(children: [
+            Consumer<WallpaperService>(
+                builder: (_, wallpaperService, __) =>
+                    _wallpaper(context, wallpaperService)),
+            Consumer<LauncherState>(
+                builder: (_, state, child) => Visibility(
+                    child: child!,
+                    replacement: const Center(child: AlternativeLauncherView()),
+                    visible: state.launcherVisible),
+                child: Scaffold(
+                    backgroundColor: Colors.transparent,
+                    body: Consumer<AppsService>(
+                        builder: (context, appsService, _) {
+                      if (!appsService.initialized) {
+                        return _emptyState(context);
+                      }
+                      return LayoutBuilder(
+                        builder: (context, constraints) {
+                          final int rowCount = appsService.launcherSections
+                              .whereType<Category>()
+                              .where((category) =>
+                                  category.type == CategoryType.row)
+                              .length;
+                          final double barHeight = constraints.maxHeight < 600
+                              ? 52
+                              : FocusAwareAppBar.barHeight;
+                          final double rowHeight = homeRowHeight(
+                            rowWidth: max(0, constraints.maxWidth - 32),
+                            bodyHeight:
+                                max(0, constraints.maxHeight - barHeight - 8),
+                            rowCount: rowCount,
+                          );
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                            child: Column(
+                              children: [
+                                FocusAwareAppBar(height: barHeight),
+                                _sections(
+                                    appsService.launcherSections, rowHeight),
+                                const Expanded(child: RecommendationsRow()),
+                              ],
+                            ),
+                          );
+                        },
                       );
-                      return Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-                        child: Column(
-                          children: [
-                            FocusAwareAppBar(height: barHeight),
-                            _sections(appsService.launcherSections, rowHeight),
-                            const Expanded(child: RecommendationsRow()),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                })))
-      ]));
+                    })))
+          ])));
 
   Widget _sections(List<LauncherSection> sections, double rowHeight) => Column(
         children: sections.map((section) {

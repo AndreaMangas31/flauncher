@@ -18,6 +18,7 @@
 
 import 'dart:math';
 
+import 'package:flauncher/home_focus.dart';
 import 'package:flauncher/models/recommendation.dart';
 import 'package:flauncher/poster_images.dart';
 import 'package:flauncher/providers/recommendations_service.dart';
@@ -68,74 +69,78 @@ class _RecommendationsRowState extends State<RecommendationsRow> {
         // Posters keep their 156×248 proportion and only shrink when the
         // column is shorter than that. The detail strip stays under them.
         return Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SectionHeading(
-                    localizations.recommendationsRow,
-                    mark: const ToriiMark(),
-                  ),
-                  Expanded(
-                    child: LayoutBuilder(
-                      builder: (context, posterConstraints) {
-                        final double available = posterConstraints.maxHeight.isFinite
+          padding: const EdgeInsets.only(top: 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SectionHeading(
+                localizations.recommendationsRow,
+                mark: const ToriiMark(),
+              ),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, posterConstraints) {
+                    final double available =
+                        posterConstraints.maxHeight.isFinite
                             ? posterConstraints.maxHeight
                             : shrinePosterHeight;
-                        final double posterHeight = min(
-                            shrinePosterHeight, max(1, available));
-                        final double posterWidth = posterHeight *
-                            (shrinePosterWidth / shrinePosterHeight);
-                        final double dpr = MediaQuery.devicePixelRatioOf(context);
-                        // Lock the decode size for the life of this row. The
-                        // detail strip changes height as titles wrap, and a
-                        // new size would be a cache miss.
-                        _lockedWidth ??= stablePosterPixels(posterWidth, dpr);
-                        _lockedHeight ??= stablePosterPixels(posterHeight, dpr);
-                        return Align(
-                          alignment: Alignment.topLeft,
-                          child: SizedBox(
-                            height: posterHeight,
-                            child: ListView.separated(
-                              key: const Key('recommendation-posters'),
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
-                              scrollDirection: Axis.horizontal,
-                              // One extra poster, not the whole feed.
-                              cacheExtent: 80,
-                              clipBehavior: Clip.none,
-                              itemCount: items.length,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(width: 14),
-                              itemBuilder: (context, index) =>
-                                  _RecommendationPoster(
-                                item: items[index],
-                                width: posterWidth,
-                                cacheWidth: _lockedWidth!,
-                                cacheHeight: _lockedHeight!,
-                                autofocus: index == 0,
-                                onFocused: () {
-                                  if (_focusedIndex.value != index) {
-                                    _focusedIndex.value = index;
-                                  }
-                                },
-                              ),
+                    final double posterHeight =
+                        min(shrinePosterHeight, max(1, available));
+                    final double posterWidth =
+                        posterHeight * (shrinePosterWidth / shrinePosterHeight);
+                    final double dpr = MediaQuery.devicePixelRatioOf(context);
+                    // Lock the decode size for the life of this row. The
+                    // detail strip changes height as titles wrap, and a
+                    // new size would be a cache miss.
+                    _lockedWidth ??= stablePosterPixels(posterWidth, dpr);
+                    _lockedHeight ??= stablePosterPixels(posterHeight, dpr);
+                    return HomeRow(
+                      builder: (ScrollController controller) => Align(
+                        alignment: Alignment.topLeft,
+                        child: SizedBox(
+                          height: posterHeight,
+                          child: ListView.separated(
+                            key: const Key('recommendation-posters'),
+                            controller: controller,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            scrollDirection: Axis.horizontal,
+                            // One extra poster, not the whole feed.
+                            cacheExtent: 80,
+                            clipBehavior: Clip.none,
+                            itemCount: items.length,
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(width: 14),
+                            itemBuilder: (context, index) =>
+                                _RecommendationPoster(
+                              item: items[index],
+                              width: posterWidth,
+                              cacheWidth: _lockedWidth!,
+                              cacheHeight: _lockedHeight!,
+                              autofocus: HomeReturn.maybeOf(context) == null &&
+                                  index == 0,
+                              onFocused: () {
+                                if (_focusedIndex.value != index) {
+                                  _focusedIndex.value = index;
+                                }
+                              },
                             ),
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                  ValueListenableBuilder<int>(
-                    valueListenable: _focusedIndex,
-                    builder: (context, index, _) {
-                      final int safe = index >= items.length ? 0 : index;
-                      return _DetailStrip(item: items[safe]);
-                    },
-                  ),
-                ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
-            );
+              ValueListenableBuilder<int>(
+                valueListenable: _focusedIndex,
+                builder: (context, index, _) {
+                  final int safe = index >= items.length ? 0 : index;
+                  return _DetailStrip(item: items[safe]);
+                },
+              ),
+            ],
+          ),
+        );
       },
     );
   }
@@ -222,43 +227,43 @@ class _RecommendationPosterState extends State<_RecommendationPoster> {
     final Recommendation item = widget.item;
     return RepaintBoundary(
       child: EnsureVisible(
-      alignment: 0.5,
-      child: AnimatedScale(
-        scale: _focused ? 1.05 : 1,
-        duration: const Duration(milliseconds: 180),
-        curve: Curves.easeOut,
-        alignment: Alignment.center,
-        child: AnimatedContainer(
+        alignment: 0.5,
+        child: AnimatedScale(
+          scale: _focused ? 1.05 : 1,
           duration: const Duration(milliseconds: 180),
-          width: widget.width,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(EmeraldShrine.posterRadius),
-            boxShadow: _focused ? EmeraldShrine.focusShadows : const [],
-          ),
-          child: Material(
-            color: EmeraldShrine.surface,
-            borderRadius: BorderRadius.circular(EmeraldShrine.posterRadius),
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              autofocus: widget.autofocus,
-              focusColor: Colors.transparent,
-              onFocusChange: (focused) {
-                setState(() => _focused = focused);
-                if (focused) {
-                  widget.onFocused();
-                }
-              },
-              onTap: () => context.read<RecommendationsService>().open(item),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  _StablePoster(
-                    url: item.imageUrl,
-                    cacheWidth: widget.cacheWidth,
-                    cacheHeight: widget.cacheHeight,
-                    placeholder: _placeholder(item),
-                  ),
-                  const DecoratedBox(
+          curve: Curves.easeOut,
+          alignment: Alignment.center,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            width: widget.width,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(EmeraldShrine.posterRadius),
+              boxShadow: _focused ? EmeraldShrine.focusShadows : const [],
+            ),
+            child: Material(
+              color: EmeraldShrine.surface,
+              borderRadius: BorderRadius.circular(EmeraldShrine.posterRadius),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                autofocus: widget.autofocus,
+                focusColor: Colors.transparent,
+                onFocusChange: (focused) {
+                  setState(() => _focused = focused);
+                  if (focused) {
+                    widget.onFocused();
+                  }
+                },
+                onTap: () => context.read<RecommendationsService>().open(item),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _StablePoster(
+                      url: item.imageUrl,
+                      cacheWidth: widget.cacheWidth,
+                      cacheHeight: widget.cacheHeight,
+                      placeholder: _placeholder(item),
+                    ),
+                    const DecoratedBox(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
@@ -284,7 +289,8 @@ class _RecommendationPosterState extends State<_RecommendationPoster> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.center,
-                            style: EmeraldShrine.posterTitle(fontSize: 15).copyWith(
+                            style: EmeraldShrine.posterTitle(fontSize: 15)
+                                .copyWith(
                               shadows: const [
                                 Shadow(color: Color(0xCC000000), blurRadius: 6),
                               ],
@@ -295,30 +301,31 @@ class _RecommendationPosterState extends State<_RecommendationPoster> {
                         ],
                       ),
                     ),
-                  // The border is a sibling of the image. Putting the focus
-                  // key on the image's parent unmounted it on every move.
-                  IgnorePointer(
-                    child: DecoratedBox(
-                      key: _focused ? const Key('emerald-focus-border') : null,
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(EmeraldShrine.posterRadius),
-                        border: Border.all(
-                          color: _focused
-                              ? EmeraldShrine.accent
-                              : Colors.transparent,
-                          width: 2.5,
+                    // The border is a sibling of the image. Putting the focus
+                    // key on the image's parent unmounted it on every move.
+                    IgnorePointer(
+                      child: DecoratedBox(
+                        key:
+                            _focused ? const Key('emerald-focus-border') : null,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(EmeraldShrine.posterRadius),
+                          border: Border.all(
+                            color: _focused
+                                ? EmeraldShrine.accent
+                                : Colors.transparent,
+                            width: 2.5,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
-    ),
     );
   }
 
@@ -383,7 +390,8 @@ class _StablePosterState extends State<_StablePoster> {
     final int width = widget.cacheWidth;
     final int height = widget.cacheHeight;
     try {
-      final ImageProvider<Object> provider = await posterProvider(url, width, height);
+      final ImageProvider<Object> provider =
+          await posterProvider(url, width, height);
       if (!mounted || ticket != _ticket) {
         return;
       }
@@ -487,9 +495,12 @@ class _ToriiPainter extends CustomPainter {
       ),
       paint,
     );
-    canvas.drawRect(Rect.fromLTWH(w * 0.08, h * 0.34, w * 0.84, h * 0.14), paint);
-    canvas.drawRect(Rect.fromLTWH(w * 0.18, h * 0.28, w * 0.12, h * 0.72), paint);
-    canvas.drawRect(Rect.fromLTWH(w * 0.70, h * 0.28, w * 0.12, h * 0.72), paint);
+    canvas.drawRect(
+        Rect.fromLTWH(w * 0.08, h * 0.34, w * 0.84, h * 0.14), paint);
+    canvas.drawRect(
+        Rect.fromLTWH(w * 0.18, h * 0.28, w * 0.12, h * 0.72), paint);
+    canvas.drawRect(
+        Rect.fromLTWH(w * 0.70, h * 0.28, w * 0.12, h * 0.72), paint);
   }
 
   @override

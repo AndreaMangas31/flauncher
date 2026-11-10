@@ -21,9 +21,11 @@ package me.efesser.flauncher;
 import android.app.AppOpsManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.*;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -63,6 +65,16 @@ public class MainActivity extends FlutterActivity
     private MethodChannel methodChannel;
     private final String APPS_EVENT_CHANNEL = "me.efesser.flauncher/event_apps";
     private final String NETWORK_EVENT_CHANNEL = "me.efesser.flauncher/event_network";
+    private boolean returnHomeReceiverRegistered;
+
+    // Screen-on and dream-end do not always come through as a fresh resume,
+    // and Home while this activity is already showing arrives as onNewIntent.
+    private final BroadcastReceiver returnHomeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            notifyReturnHome();
+        }
+    };
 
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine)
@@ -115,6 +127,65 @@ public class MainActivity extends FlutterActivity
                 || level == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
             methodChannel.invokeMethod("trimMemory", level);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (returnHomeReceiverRegistered) {
+            return;
+        }
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_DREAMING_STOPPED);
+        // System broadcasts. EXPORTED so the system can deliver them on API 33+.
+        // Both actions are protected, so another app cannot send them.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(returnHomeReceiver, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(returnHomeReceiver, filter);
+        }
+        returnHomeReceiverRegistered = true;
+    }
+
+    @Override
+    protected void onStop() {
+        unregisterReturnHomeReceiver();
+        super.onStop();
+    }
+
+    @Override
+    protected void onNewIntent(@NonNull Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if (Intent.ACTION_MAIN.equals(intent.getAction())
+                && intent.hasCategory(Intent.CATEGORY_HOME)) {
+            notifyReturnHome();
+        }
+    }
+
+    private void unregisterReturnHomeReceiver() {
+        if (!returnHomeReceiverRegistered) {
+            return;
+        }
+        unregisterReceiver(returnHomeReceiver);
+        returnHomeReceiverRegistered = false;
+    }
+
+    private void notifyReturnHome() {
+        if (methodChannel == null) {
+            return;
+        }
+        methodChannel.invokeMethod("returnHome", null, new MethodChannel.Result() {
+            @Override
+            public void success(Object result) { }
+
+            @Override
+            public void error(String errorCode, String errorMessage, Object errorDetails) { }
+
+            @Override
+            public void notImplemented() { }
+        });
     }
 
     private List<Map<String, Serializable>> getApplications() {

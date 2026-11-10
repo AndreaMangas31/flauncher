@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'package:flauncher/home_focus.dart';
 import 'package:flauncher/models/hdmi_input.dart';
 import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/theme/emerald_shrine.dart';
@@ -30,7 +31,9 @@ Future<void> showInputsPicker(BuildContext context) async {
   try {
     final List<Map<String, String>> rows =
         await context.read<AppsService>().hdmiInputs();
-    inputs = [for (final Map<String, String> row in rows) HdmiInput.fromMap(row)];
+    inputs = [
+      for (final Map<String, String> row in rows) HdmiInput.fromMap(row)
+    ];
   } catch (_) {
     inputs = const [];
   }
@@ -87,7 +90,8 @@ class InputsPicker extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(localizations.inputs, style: EmeraldShrine.heading(fontSize: 22)),
+              Text(localizations.inputs,
+                  style: EmeraldShrine.heading(fontSize: 22)),
               const SizedBox(height: 12),
               if (inputs.isEmpty)
                 Padding(
@@ -95,7 +99,8 @@ class InputsPicker extends StatelessWidget {
                   child: Text(
                     localizations.noHdmiInputs,
                     key: const Key('inputs-empty'),
-                    style: EmeraldShrine.body(color: EmeraldShrine.secondaryText),
+                    style:
+                        EmeraldShrine.body(color: EmeraldShrine.secondaryText),
                   ),
                 )
               else
@@ -180,7 +185,28 @@ class InputsTile extends StatefulWidget {
 }
 
 class _InputsTileState extends State<InputsTile> {
+  final FocusNode _focusNode = FocusNode(debugLabel: 'entradas');
+  HomeReturnController? _home;
   bool _focused = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final HomeReturnController? next = HomeReturn.maybeOf(context);
+    if (next == _home) {
+      return;
+    }
+    _home?.detachEntradas(_focusNode);
+    _home = next;
+    _home?.attachEntradas(_focusNode);
+  }
+
+  @override
+  void dispose() {
+    _home?.detachEntradas(_focusNode);
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -190,7 +216,8 @@ class _InputsTileState extends State<InputsTile> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         transformAlignment: Alignment.center,
-        transform: Matrix4.diagonal3Values(_focused ? 1.06 : 1, _focused ? 1.06 : 1, 1),
+        transform: Matrix4.diagonal3Values(
+            _focused ? 1.06 : 1, _focused ? 1.06 : 1, 1),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(EmeraldShrine.tileRadius),
           boxShadow: _focused ? EmeraldShrine.focusShadows : const [],
@@ -200,22 +227,37 @@ class _InputsTileState extends State<InputsTile> {
           borderRadius: BorderRadius.circular(EmeraldShrine.tileRadius),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
+            focusNode: _focusNode,
             autofocus: true,
             focusColor: Colors.transparent,
-            onFocusChange: (focused) => setState(() => _focused = focused),
+            onFocusChange: (focused) {
+              setState(() => _focused = focused);
+              if (focused) {
+                // Pin the tile to the start of the row. Centering it would
+                // leave a gap where the row should begin.
+                Scrollable.ensureVisible(
+                  context,
+                  alignment: 0,
+                  duration: const Duration(milliseconds: 100),
+                );
+              }
+            },
             onTap: () => showInputsPicker(context),
             child: DecoratedBox(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(EmeraldShrine.tileRadius),
                 border: Border.all(
-                  color: _focused ? EmeraldShrine.accent : Colors.white.withOpacity(0.10),
+                  color: _focused
+                      ? EmeraldShrine.accent
+                      : Colors.white.withOpacity(0.10),
                   width: _focused ? 2.5 : 1,
                 ),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.input, color: EmeraldShrine.accent, size: _focused ? 22 : 20),
+                  Icon(Icons.input,
+                      color: EmeraldShrine.accent, size: _focused ? 22 : 20),
                   const SizedBox(height: 4),
                   Text(
                     localizations.inputs,
