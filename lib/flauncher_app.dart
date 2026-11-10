@@ -19,7 +19,6 @@
 import 'package:flauncher/actions.dart';
 import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/providers/launcher_state.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -27,26 +26,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'flauncher.dart';
+import 'theme/emerald_shrine.dart';
 
-class FLauncherApp extends StatelessWidget
-{
-  static const PrioritizedIntents _backIntents = PrioritizedIntents(orderedIntents: [
-    DismissIntent(),
-    BackIntent()
-  ]);
-
-  static const MaterialColor _swatch = MaterialColor(0xFF011526, <int, Color>{
-    50: Color(0xFF36A0FA),
-    100: Color(0xFF067BDE),
-    200: Color(0xFF045CA7),
-    300: Color(0xFF033662),
-    400: Color(0xFF022544),
-    500: Color(0xFF011526),
-    600: Color(0xFF000508),
-    700: Color(0xFF000000),
-    800: Color(0xFF000000),
-    900: Color(0xFF000000),
-  });
+class FLauncherApp extends StatelessWidget {
+  static const PrioritizedIntents _backIntents =
+      PrioritizedIntents(orderedIntents: [DismissIntent(), BackIntent()]);
 
   const FLauncherApp();
 
@@ -75,37 +59,15 @@ class FLauncherApp extends StatelessWidget
       ],
       supportedLocales: AppLocalizations.supportedLocales,
       title: 'FLauncher',
-      theme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        primarySwatch: _swatch,
-        cardColor: _swatch[300],
-        canvasColor: _swatch[300],
-        dialogBackgroundColor: _swatch[400],
-        scaffoldBackgroundColor: _swatch[400],
-        textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: Colors.white)),
-        appBarTheme: const AppBarTheme(elevation: 0, backgroundColor: Colors.transparent),
-        typography: Typography.material2018(),
-        inputDecorationTheme: InputDecorationTheme(
-          focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-          labelStyle: Typography.material2018().white.bodyMedium,
-        ),
-        textSelectionTheme: TextSelectionThemeData(
-          cursorColor: Colors.white,
-          selectionColor: _swatch[200],
-          selectionHandleColor: _swatch[200],
-        ),
-      ),
+      theme: EmeraldShrine.theme(),
       home: Builder(
-        builder: (context) => PopScope(
-          canPop: false,
-          child: FLauncher(),
-          onPopInvoked: (didPop) {
-            LauncherState launcherState = context.read<LauncherState>();
-            launcherState.handleBackNavigation(context);
-          }
-        )
-      ),
+          builder: (context) => PopScope(
+              canPop: false,
+              child: FLauncher(),
+              onPopInvokedWithResult: (didPop, _) {
+                LauncherState launcherState = context.read<LauncherState>();
+                launcherState.handleBackNavigation(context);
+              })),
     );
   }
 }

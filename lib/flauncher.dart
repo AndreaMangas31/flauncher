@@ -20,8 +20,10 @@ import 'package:flauncher/custom_traversal_policy.dart';
 import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/providers/launcher_state.dart';
 import 'package:flauncher/providers/wallpaper_service.dart';
+import 'package:flauncher/theme/emerald_shrine.dart';
 import 'package:flauncher/widgets/apps_grid.dart';
 import 'package:flauncher/widgets/category_row.dart';
+import 'package:flauncher/widgets/emerald_backdrop.dart';
 import 'package:flauncher/widgets/recommendations_row.dart';
 import 'package:flauncher/widgets/launcher_alternative_view.dart';
 import 'package:flauncher/widgets/focus_aware_app_bar.dart';
@@ -38,7 +40,9 @@ class FLauncher extends StatelessWidget {
   Widget build(BuildContext context) => FocusTraversalGroup(
       policy: RowByRowTraversalPolicy(),
       child: Stack(children: [
-        Consumer<WallpaperService>(builder: (_, wallpaperService, __) => _wallpaper(context, wallpaperService)),
+        Consumer<WallpaperService>(
+            builder: (_, wallpaperService, __) =>
+                _wallpaper(context, wallpaperService)),
         Consumer<LauncherState>(
             builder: (_, state, child) => Visibility(
                 child: child!,
@@ -49,7 +53,8 @@ class FLauncher extends StatelessWidget {
                 appBar: FocusAwareAppBar(),
                 body: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    child: Consumer<AppsService>(builder: (context, appsService, _) {
+                    child: Consumer<AppsService>(
+                        builder: (context, appsService, _) {
                       if (appsService.initialized) {
                         return SingleChildScrollView(
                           child: Column(
@@ -77,28 +82,40 @@ class FLauncher extends StatelessWidget {
           Category category = section as Category;
           switch (category.type) {
             case CategoryType.row:
-              categoryWidget = CategoryRow(key: sectionKey, category: category, applications: category.applications);
+              categoryWidget = CategoryRow(
+                  key: sectionKey,
+                  category: category,
+                  applications: category.applications);
             case CategoryType.grid:
-              categoryWidget = AppsGrid(key: sectionKey, category: category, applications: category.applications);
+              categoryWidget = AppsGrid(
+                  key: sectionKey,
+                  category: category,
+                  applications: category.applications);
           }
 
-          return Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: categoryWidget);
+          return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: categoryWidget);
         }).toList(),
       );
 
   Widget _wallpaper(BuildContext context, WallpaperService wallpaperService) {
-    if (wallpaperService.wallpaper != null) {
-      final physicalSize = MediaQuery.sizeOf(context);
-      return Image(
-          image: wallpaperService.wallpaper!,
-          key: const Key("background"),
-          fit: BoxFit.cover,
-          height: physicalSize.height,
-          width: physicalSize.width);
-    } else {
-      return Container(
-          key: const Key("background"), decoration: BoxDecoration(gradient: wallpaperService.gradient.gradient));
+    if (!wallpaperService.ready) {
+      return const ColoredBox(
+          key: Key("background"), color: EmeraldShrine.background);
     }
+    // A photo the user picked wins over the shrine. A gradient they picked
+    // in settings still wins over the shrine, which is only the default.
+    if (wallpaperService.wallpaper != null) {
+      return EmeraldBackdrop(userWallpaper: wallpaperService.wallpaper);
+    }
+    if (wallpaperService.hasCustomGradient) {
+      return Container(
+        key: const Key("background"),
+        decoration: BoxDecoration(gradient: wallpaperService.gradient.gradient),
+      );
+    }
+    return const EmeraldBackdrop();
   }
 
   Widget _emptyState(BuildContext context) {
@@ -110,7 +127,8 @@ class FLauncher extends StatelessWidget {
         children: [
           const CircularProgressIndicator(),
           const SizedBox(height: 16),
-          Text(localizations.loading, style: Theme.of(context).textTheme.titleLarge),
+          Text(localizations.loading,
+              style: Theme.of(context).textTheme.titleLarge),
         ],
       ),
     );
