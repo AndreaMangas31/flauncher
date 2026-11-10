@@ -74,6 +74,8 @@ public class MainActivity extends FlutterActivity
                 case "applicationExists" -> result.success(applicationExists(call.arguments()));
                 case "launchActivityFromAction" -> result.success(launchActivityFromAction(call.arguments()));
                 case "launchApp" -> result.success(launchApp(call.arguments()));
+                case "launchLiveTv" -> result.success(launchLiveTv());
+                case "openRecommendation" -> result.success(openRecommendation(call.arguments()));
                 case "openSettings" -> result.success(openSettings());
                 case "openAppInfo" -> result.success(openAppInfo(call.arguments()));
                 case "uninstallApp" -> result.success(uninstallApp(call.arguments()));
@@ -178,7 +180,35 @@ public class MainActivity extends FlutterActivity
             }
         }
 
+        attachLiveTvShortcut(applications);
         return applications;
+    }
+
+    private void attachLiveTvShortcut(List<Map<String, Serializable>> applications)
+    {
+        try {
+            Intent intent = LiveTv.resolve(this);
+            if (intent == null || intent.getComponent() == null) {
+                return;
+            }
+
+            String packageName = intent.getComponent().getPackageName();
+            for (Map<String, Serializable> application : applications) {
+                if (packageName.equals(application.get("packageName"))) {
+                    application.put("liveTv", Boolean.TRUE);
+                    application.put("action", LiveTv.ACTION);
+                    return;
+                }
+            }
+
+            ActivityInfo activityInfo = getPackageManager().getActivityInfo(intent.getComponent(), 0);
+            Map<String, Serializable> shortcut = buildAppMap(activityInfo, false, LiveTv.ACTION);
+            shortcut.put("liveTv", Boolean.TRUE);
+            applications.add(shortcut);
+        }
+        catch (Exception ignored) {
+            // TV input APIs differ by vendor. No shortcut is better than a crash.
+        }
     }
 
     public Map<String, Serializable> getApplication(String packageName) {
@@ -195,10 +225,26 @@ public class MainActivity extends FlutterActivity
 
             if (activityInfo != null) {
                 map = buildAppMap(activityInfo, false, null);
+                if (isLiveTvPackage(packageName)) {
+                    map.put("liveTv", Boolean.TRUE);
+                    map.put("action", LiveTv.ACTION);
+                }
             }
         }
 
         return map;
+    }
+
+    private boolean isLiveTvPackage(String packageName)
+    {
+        try {
+            Intent intent = LiveTv.resolve(this);
+            return intent != null && intent.getComponent() != null
+                    && packageName.equals(intent.getComponent().getPackageName());
+        }
+        catch (Exception ignored) {
+            return false;
+        }
     }
 
     private byte[] getApplicationBanner(String packageName) {
@@ -293,6 +339,42 @@ public class MainActivity extends FlutterActivity
 
     private boolean launchActivityFromAction(String action) {
         return tryStartActivity(new Intent(action));
+    }
+
+    private boolean launchLiveTv()
+    {
+        Intent intent = LiveTv.resolve(this);
+        if (intent == null) {
+            return false;
+        }
+        return tryStartActivity(intent);
+    }
+
+    private boolean openRecommendation(Object arguments)
+    {
+        if (!(arguments instanceof Map<?, ?> map)) {
+            return false;
+        }
+
+        Object deepLink = map.get("deepLink");
+        Object packageName = map.get("packageName");
+
+        if (deepLink instanceof String link && !link.isEmpty()) {
+            try {
+                Intent view = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                view.addCategory(Intent.CATEGORY_BROWSABLE);
+                view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                if (view.resolveActivity(getPackageManager()) != null) {
+                    return tryStartActivity(view);
+                }
+            }
+            catch (Exception ignored) { }
+        }
+
+        if (packageName instanceof String name && !name.isEmpty()) {
+            return launchApp(name);
+        }
+        return false;
     }
 
     private boolean launchApp(String packageName) {

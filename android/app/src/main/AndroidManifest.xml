@@ -28,6 +28,7 @@
         android:name="android.hardware.wifi"
         android:required="false" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
@@ -39,6 +40,37 @@
         <intent>
             <action android:name="android.intent.action.GET_CONTENT" />
         </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <data android:scheme="content" android:host="android.media.tv" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="http" />
+        </intent>
+        <package android:name="com.google.android.tv" />
+        <package android:name="com.android.tv" />
+        <package android:name="org.droidtv.playtv" />
+        <package android:name="com.mediatek.wwtv.tvcenter" />
+        <package android:name="com.realtek.tv" />
+        <package android:name="com.droidlogic.android.tv" />
+        <package android:name="com.tcl.tv" />
+        <package android:name="com.sony.dtv.tvx" />
+        <package android:name="com.amazon.tv.livetv" />
+        <package android:name="com.netflix.ninja" />
+        <package android:name="com.crunchyroll.crunchyroid" />
+        <package android:name="com.disney.disneyplus" />
+        <package android:name="com.amazon.amazonvideo.livingroom" />
+        <package android:name="com.wbd.stream" />
+        <package android:name="com.hbo.hbonow" />
+        <package android:name="com.filmin.filminapp" />
     </queries>
 
     <application
@@ -46,7 +78,8 @@
         android:banner="@drawable/banner"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="FLauncher">
+        android:label="FLauncher"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
