@@ -100,52 +100,75 @@ class _SenkuDreamState extends State<SenkuDream> with TickerProviderStateMixin {
         : widget.items[_index % widget.items.length];
     final Animation<double> drift = _drift ?? const AlwaysStoppedAnimation(0.5);
 
-    return IgnorePointer(
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          EmeraldBackdrop(poll: widget.animate, clock: widget.clock),
-          AnimatedBuilder(
-            animation: drift,
-            builder: (context, child) {
-              return Align(
-                alignment: Alignment.topLeft,
-                child: Transform.translate(
-                  offset: dreamDriftOffset(drift.value) + const Offset(72, 64),
-                  child: child,
-                ),
-              );
-            },
-            child: _DreamClock(now: _now),
-          ),
-          if (item != null)
-            AnimatedBuilder(
-              animation: drift,
-              builder: (context, child) {
-                return Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Transform.translate(
-                    offset:
-                        -dreamDriftOffset(drift.value) + const Offset(72, -56),
-                    child: child,
+    final TextStyle themeBody = Theme.of(context).textTheme.bodyMedium ??
+        EmeraldShrine.body(color: EmeraldShrine.text);
+    return Material(
+      type: MaterialType.transparency,
+      child: DefaultTextStyle(
+        style: themeBody.copyWith(
+          decoration: TextDecoration.none,
+          color: EmeraldShrine.text,
+          fontFamily: EmeraldShrine.interFamily,
+        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final double width = constraints.maxWidth.isFinite
+                ? constraints.maxWidth
+                : MediaQuery.sizeOf(context).width;
+            // About 5% so a TV's overscan does not clip the clock or the panel.
+            final double inset = width * 0.05;
+            final Offset wander = dreamDriftOffset(drift.value);
+            return IgnorePointer(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  EmeraldBackdrop(poll: widget.animate, clock: widget.clock),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(inset, inset, inset, inset),
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Transform.translate(
+                            offset: Offset(
+                              wander.dx.clamp(-inset * 0.4, inset * 0.4),
+                              wander.dy.clamp(-inset * 0.3, inset * 0.3),
+                            ),
+                            child: _DreamClock(now: _now),
+                          ),
+                        ),
+                        if (item != null)
+                          Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Transform.translate(
+                              offset: Offset(
+                                (-wander.dx).clamp(-inset * 0.25, inset * 0.25),
+                                (-wander.dy).clamp(-inset * 0.2, inset * 0.2),
+                              ),
+                              child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 1200),
+                                switchInCurve: Curves.easeOut,
+                                switchOutCurve: Curves.easeIn,
+                                child: _DreamCard(
+                                  key: ValueKey<String>(
+                                      '${item.title}-${_index % widget.items.length}'),
+                                  item: item,
+                                  maxWidth: width - inset * 2.5,
+                                  duration: widget.slideDuration,
+                                  animate: widget.animate,
+                                  onFinished: _advance,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
-                );
-              },
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 1200),
-                switchInCurve: Curves.easeOut,
-                switchOutCurve: Curves.easeIn,
-                child: _DreamCard(
-                  key: ValueKey<String>(
-                      '${item.title}-${_index % widget.items.length}'),
-                  item: item,
-                  duration: widget.slideDuration,
-                  animate: widget.animate,
-                  onFinished: _advance,
-                ),
+                ],
               ),
-            ),
-        ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -190,6 +213,7 @@ class _DreamClock extends StatelessWidget {
 
 class _DreamCard extends StatefulWidget {
   final Recommendation item;
+  final double maxWidth;
   final Duration duration;
   final bool animate;
 
@@ -199,6 +223,7 @@ class _DreamCard extends StatefulWidget {
   const _DreamCard({
     super.key,
     required this.item,
+    required this.maxWidth,
     required this.duration,
     required this.animate,
     required this.onFinished,
@@ -243,20 +268,20 @@ class _DreamCardState extends State<_DreamCard>
         _slide ?? const AlwaysStoppedAnimation(0);
     final Recommendation item = widget.item;
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 920),
+      key: const Key('dream-panel'),
+      constraints: BoxConstraints(maxWidth: widget.maxWidth),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: EmeraldShrine.surface.withOpacity(0.82),
+          color: EmeraldShrine.surface.withOpacity(0.55),
           borderRadius: BorderRadius.circular(18),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(22, 20, 24, 20),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
               _Poster(item: item, progress: progress),
-              const SizedBox(width: 20),
-              Flexible(
+              const SizedBox(width: 28),
+              Expanded(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,

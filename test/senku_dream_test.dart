@@ -18,9 +18,11 @@
 
 import 'package:flauncher/dream_feed.dart';
 import 'package:flauncher/models/recommendation.dart';
+import 'package:flauncher/theme/emerald_shrine.dart';
 import 'package:flauncher/theme/shrine_clock.dart';
 import 'package:flauncher/widgets/senku_dream.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 
@@ -143,6 +145,63 @@ void main() {
       expect(find.text("La emperatriz divorciada"), findsWidgets);
       expect(find.text("A court romance."), findsWidgets);
       expect(find.text("Disney+"), findsWidgets);
+    });
+  });
+
+  testWidgets("a 1080p dream keeps the panel on screen without yellow underlines",
+      (tester) async {
+    await mockNetworkImagesFor(() async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 2.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      const String synopsis =
+          "Los cazadores se enfrentan en prueba tras prueba mientras Netflix España sigue la temporada completa con un final que no cabe en una sola línea.";
+      final DateTime moment = DateTime(2026, 1, 24, 23, 53);
+      await tester.pumpWidget(MaterialApp(
+        theme: EmeraldShrine.theme(),
+        home: SenkuDream(
+          animate: false,
+          clock: () => moment,
+          items: const [
+            Recommendation(
+              title: "Black Clover T2",
+              description: synopsis,
+              platform: "Netflix",
+              type: "serie",
+              status: "airing",
+              imageUrl: "https://example.com/a.jpg",
+            ),
+          ],
+        ),
+      ));
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+
+      final Size logical =
+          tester.view.physicalSize / tester.view.devicePixelRatio;
+      final Rect panel = tester.getRect(find.byKey(const Key("dream-panel")));
+      final Rect description =
+          tester.getRect(find.byKey(const Key("dream-description")));
+      expect(panel.left, greaterThanOrEqualTo(logical.width * 0.04));
+      expect(panel.right, lessThanOrEqualTo(logical.width * 0.96));
+      expect(description.right, lessThanOrEqualTo(panel.right));
+      expect(description.left, greaterThanOrEqualTo(panel.left));
+
+      final Text synopsisText =
+          tester.widget(find.byKey(const Key("dream-description")));
+      expect(synopsisText.maxLines, 3);
+      expect(synopsisText.overflow, TextOverflow.ellipsis);
+
+      for (final String sample in ["23:53", "Netflix", synopsis]) {
+        final RenderParagraph paragraph = tester.renderObject(find.text(sample));
+        final TextSpan span = paragraph.text as TextSpan;
+        expect(span.style?.decoration, isNot(TextDecoration.underline));
+        expect(span.style?.decoration, anyOf(isNull, TextDecoration.none));
+      }
+      final RenderParagraph clock = tester.renderObject(find.text("23:53"));
+      expect((clock.text as TextSpan).style?.fontFamily, EmeraldShrine.outfitFamily);
     });
   });
 }
