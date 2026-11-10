@@ -28,6 +28,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
+/// Counts poster builds so a focus move can be checked without a profiler.
+int recommendationPosterBuilds = 0;
+
 /// Portrait posters pinned under the categories. The strip under the row
 /// follows whichever poster has focus.
 class RecommendationsRow extends StatefulWidget {
@@ -38,7 +41,13 @@ class RecommendationsRow extends StatefulWidget {
 }
 
 class _RecommendationsRowState extends State<RecommendationsRow> {
-  int _focusedIndex = 0;
+  final ValueNotifier<int> _focusedIndex = ValueNotifier<int>(0);
+
+  @override
+  void dispose() {
+    _focusedIndex.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,12 +57,11 @@ class _RecommendationsRowState extends State<RecommendationsRow> {
         if (items.isEmpty) {
           return const SizedBox.shrink();
         }
-        if (_focusedIndex >= items.length) {
-          _focusedIndex = 0;
+        if (_focusedIndex.value >= items.length) {
+          _focusedIndex.value = 0;
         }
 
         final AppLocalizations localizations = AppLocalizations.of(context)!;
-        final Recommendation focused = items[_focusedIndex];
         // Posters keep their 156×248 proportion and only shrink when the
         // column is shorter than that. The detail strip stays under them.
         return Padding(
@@ -84,6 +92,8 @@ class _RecommendationsRowState extends State<RecommendationsRow> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8),
                               scrollDirection: Axis.horizontal,
+                              // One extra poster, not the whole feed.
+                              cacheExtent: 80,
                               clipBehavior: Clip.none,
                               itemCount: items.length,
                               separatorBuilder: (_, __) =>
@@ -94,8 +104,8 @@ class _RecommendationsRowState extends State<RecommendationsRow> {
                                 width: posterWidth,
                                 autofocus: index == 0,
                                 onFocused: () {
-                                  if (_focusedIndex != index) {
-                                    setState(() => _focusedIndex = index);
+                                  if (_focusedIndex.value != index) {
+                                    _focusedIndex.value = index;
                                   }
                                 },
                               ),
@@ -105,7 +115,13 @@ class _RecommendationsRowState extends State<RecommendationsRow> {
                       },
                     ),
                   ),
-                  _DetailStrip(item: focused),
+                  ValueListenableBuilder<int>(
+                    valueListenable: _focusedIndex,
+                    builder: (context, index, _) {
+                      final int safe = index >= items.length ? 0 : index;
+                      return _DetailStrip(item: items[safe]);
+                    },
+                  ),
                 ],
               ),
             );
@@ -187,8 +203,10 @@ class _RecommendationPosterState extends State<_RecommendationPoster> {
 
   @override
   Widget build(BuildContext context) {
+    recommendationPosterBuilds++;
     final Recommendation item = widget.item;
-    return EnsureVisible(
+    return RepaintBoundary(
+      child: EnsureVisible(
       alignment: 0.5,
       child: AnimatedScale(
         scale: _focused ? 1.05 : 1,
@@ -274,6 +292,7 @@ class _RecommendationPosterState extends State<_RecommendationPoster> {
           ),
         ),
       ),
+    ),
     );
   }
 

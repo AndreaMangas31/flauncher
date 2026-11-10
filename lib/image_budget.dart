@@ -30,7 +30,9 @@ const int imageCacheByteBudget = 48 * 1024 * 1024;
 /// so the cap still leaves room for banners and a few posters.
 void installImageCacheBudget() {
   final ImageCache cache = PaintingBinding.instance.imageCache;
-  cache.maximumSize = 64;
+  // About the banners on screen plus a handful of posters, not the
+  // whole installed catalogue.
+  cache.maximumSize = 32;
   cache.maximumSizeBytes = imageCacheByteBudget;
 }
 

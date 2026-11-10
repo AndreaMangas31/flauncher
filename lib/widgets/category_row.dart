@@ -72,6 +72,7 @@ class CategoryRow extends StatelessWidget {
               childrenDelegate: SliverChildBuilderDelegate(
                 childCount: leading + visible + (hidden > 0 ? 1 : 0),
                 findChildIndexCallback: _findChildIndex,
+                addRepaintBoundaries: true,
                 (context, index) {
                   if (_inputsFirst && index == 0) {
                     return const Padding(
