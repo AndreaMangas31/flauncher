@@ -220,12 +220,8 @@ class AppsService extends ChangeNotifier with WidgetsBindingObserver {
     }
 
     await addToCategory(application, category, shouldNotifyListeners: false);
-    if (application.liveTv) {
-      _moveToFront(category, application);
-      await saveApplicationOrderInCategory(category);
-    } else {
-      notifyListeners();
-    }
+    sortCategory(category);
+    await saveApplicationOrderInCategory(category);
   }
 
   /// Devices without a tuner simply have no live-TV tile. If the shortcut is
@@ -281,6 +277,8 @@ class AppsService extends ChangeNotifier with WidgetsBindingObserver {
     Map<String, Tuple2<Map, AppsCompanion>> appsFromSystemByPackageName = Map.fromEntries(appEntries);
 
     List<App> appsFromDatabase = await appsFromDatabaseFuture;
+    final Set<String> alreadyStored =
+        appsFromDatabase.map((app) => app.packageName).toSet();
     final Iterable<App> appsRemovedFromSystem =
         appsFromDatabase.where((app) => !appsFromSystemByPackageName.containsKey(app.packageName));
 
@@ -343,6 +341,13 @@ class AppsService extends ChangeNotifier with WidgetsBindingObserver {
           }
         }
       }
+    }
+
+    for (final App application in _applications.values.toList()) {
+      if (alreadyStored.contains(application.packageName)) {
+        continue;
+      }
+      await _placeInstalledApp(application);
     }
 
     for (Category category in _categoriesById.values) {

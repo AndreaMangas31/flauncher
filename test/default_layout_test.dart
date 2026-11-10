@@ -135,6 +135,47 @@ void main() {
 
     await database.close();
   });
+
+  test("an app installed after the first launch joins Apps in pinned order", () async {
+    final File file = File("${tempDir.path}/db.sqlite");
+    final FLauncherDatabase created =
+        FLauncherDatabase(DatabaseConnection(NativeDatabase(file)));
+    final AppsService first = await _start(created, [
+      _app(netflixPackage, "Netflix"),
+      _app(crunchyrollPackage, "Crunchyroll"),
+    ]);
+    expect(
+      first.launcherSections.whereType<Category>().first.applications.map((app) => app.packageName),
+      [crunchyrollPackage, netflixPackage],
+    );
+    first.dispose();
+    await created.close();
+
+    final FLauncherDatabase existing =
+        FLauncherDatabase(DatabaseConnection(NativeDatabase(file)));
+    final AppsService second = await _start(existing, [
+      _app(netflixPackage, "Netflix"),
+      _app(crunchyrollPackage, "Crunchyroll"),
+      _app(maxPackage, "HBO Max"),
+      _app(filminTvPackage, "Filmin"),
+      _app("com.other.late", "Late"),
+    ]);
+
+    expect(existing.wasCreated, isFalse);
+    expect(
+      second.launcherSections.whereType<Category>().first.applications.map((app) => app.packageName).toList(),
+      [
+        crunchyrollPackage,
+        netflixPackage,
+        maxPackage,
+        filminTvPackage,
+        "com.other.late",
+      ],
+    );
+
+    second.dispose();
+    await existing.close();
+  });
 }
 
 Map<String, Object?> _app(String packageName, String name, {bool liveTv = false}) => {
