@@ -19,6 +19,7 @@
 import 'dart:math';
 
 import 'package:flauncher/models/recommendation.dart';
+import 'package:flauncher/poster_images.dart';
 import 'package:flauncher/providers/recommendations_service.dart';
 import 'package:flauncher/theme/emerald_shrine.dart';
 import 'package:flauncher/widgets/app_row_fit.dart';
@@ -42,6 +43,8 @@ class RecommendationsRow extends StatefulWidget {
 
 class _RecommendationsRowState extends State<RecommendationsRow> {
   final ValueNotifier<int> _focusedIndex = ValueNotifier<int>(0);
+  int? _lockedWidth;
+  int? _lockedHeight;
 
   @override
   void dispose() {
@@ -83,6 +86,12 @@ class _RecommendationsRowState extends State<RecommendationsRow> {
                             shrinePosterHeight, max(1, available));
                         final double posterWidth = posterHeight *
                             (shrinePosterWidth / shrinePosterHeight);
+                        final double dpr = MediaQuery.devicePixelRatioOf(context);
+                        // Lock the decode size for the life of this row. The
+                        // detail strip changes height as titles wrap, and a
+                        // new size would be a cache miss.
+                        _lockedWidth ??= stablePosterPixels(posterWidth, dpr);
+                        _lockedHeight ??= stablePosterPixels(posterHeight, dpr);
                         return Align(
                           alignment: Alignment.topLeft,
                           child: SizedBox(
@@ -102,6 +111,8 @@ class _RecommendationsRowState extends State<RecommendationsRow> {
                                   _RecommendationPoster(
                                 item: items[index],
                                 width: posterWidth,
+                                cacheWidth: _lockedWidth!,
+                                cacheHeight: _lockedHeight!,
                                 autofocus: index == 0,
                                 onFocused: () {
                                   if (_focusedIndex.value != index) {
@@ -184,12 +195,16 @@ class _DetailStrip extends StatelessWidget {
 class _RecommendationPoster extends StatefulWidget {
   final Recommendation item;
   final double width;
+  final int cacheWidth;
+  final int cacheHeight;
   final bool autofocus;
   final VoidCallback onFocused;
 
   const _RecommendationPoster({
     required this.item,
     required this.width,
+    required this.cacheWidth,
+    required this.cacheHeight,
     required this.autofocus,
     required this.onFocused,
   });
@@ -234,21 +249,16 @@ class _RecommendationPosterState extends State<_RecommendationPoster> {
                 }
               },
               onTap: () => context.read<RecommendationsService>().open(item),
-              child: DecoratedBox(
-                key: _focused ? const Key('emerald-focus-border') : null,
-                decoration: BoxDecoration(
-                  borderRadius:
-                      BorderRadius.circular(EmeraldShrine.posterRadius),
-                  border: Border.all(
-                    color: _focused ? EmeraldShrine.accent : Colors.transparent,
-                    width: 2.5,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  _StablePoster(
+                    url: item.imageUrl,
+                    cacheWidth: widget.cacheWidth,
+                    cacheHeight: widget.cacheHeight,
+                    placeholder: _placeholder(item),
                   ),
-                ),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    _poster(item),
-                    const DecoratedBox(
+                  const DecoratedBox(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
@@ -285,40 +295,30 @@ class _RecommendationPosterState extends State<_RecommendationPoster> {
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  // The border is a sibling of the image. Putting the focus
+                  // key on the image's parent unmounted it on every move.
+                  IgnorePointer(
+                    child: DecoratedBox(
+                      key: _focused ? const Key('emerald-focus-border') : null,
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(EmeraldShrine.posterRadius),
+                        border: Border.all(
+                          color: _focused
+                              ? EmeraldShrine.accent
+                              : Colors.transparent,
+                          width: 2.5,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
         ),
       ),
     ),
-    );
-  }
-
-  Widget _poster(Recommendation item) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final double ratio = MediaQuery.devicePixelRatioOf(context);
-        final int cacheWidth = (constraints.maxWidth * ratio).round().clamp(1, 480);
-        final int cacheHeight =
-            (constraints.maxHeight * ratio).round().clamp(1, 720);
-        return Image.network(
-      item.imageUrl,
-      fit: BoxFit.cover,
-      cacheWidth: cacheWidth,
-      cacheHeight: cacheHeight,
-      gaplessPlayback: false,
-      filterQuality: FilterQuality.low,
-      errorBuilder: (_, __, ___) => _placeholder(item),
-      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-        if (wasSynchronouslyLoaded || frame != null) {
-          return child;
-        }
-        return const ColoredBox(color: EmeraldShrine.surface);
-      },
-    );
-      },
     );
   }
 
@@ -336,6 +336,81 @@ class _RecommendationPosterState extends State<_RecommendationPoster> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _StablePoster extends StatefulWidget {
+  final String url;
+  final int cacheWidth;
+  final int cacheHeight;
+  final Widget placeholder;
+
+  const _StablePoster({
+    required this.url,
+    required this.cacheWidth,
+    required this.cacheHeight,
+    required this.placeholder,
+  });
+
+  @override
+  State<_StablePoster> createState() => _StablePosterState();
+}
+
+class _StablePosterState extends State<_StablePoster> {
+  ImageProvider<Object>? _provider;
+  int _ticket = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _resolve();
+  }
+
+  @override
+  void didUpdateWidget(covariant _StablePoster oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.url != widget.url ||
+        oldWidget.cacheWidth != widget.cacheWidth ||
+        oldWidget.cacheHeight != widget.cacheHeight) {
+      _resolve();
+    }
+  }
+
+  Future<void> _resolve() async {
+    final int ticket = ++_ticket;
+    final String url = widget.url;
+    final int width = widget.cacheWidth;
+    final int height = widget.cacheHeight;
+    try {
+      final ImageProvider<Object> provider = await posterProvider(url, width, height);
+      if (!mounted || ticket != _ticket) {
+        return;
+      }
+      if (!identical(_provider, provider)) {
+        setState(() => _provider = provider);
+      }
+      await precacheImage(provider, context);
+    } catch (_) {
+      if (!mounted || ticket != _ticket) {
+        return;
+      }
+      setState(() => _provider = null);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final ImageProvider<Object>? provider = _provider;
+    if (provider == null) {
+      return widget.placeholder;
+    }
+    return Image(
+      image: provider,
+      fit: BoxFit.cover,
+      gaplessPlayback: true,
+      filterQuality: FilterQuality.low,
+      errorBuilder: (_, __, ___) => widget.placeholder,
     );
   }
 }
