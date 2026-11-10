@@ -16,11 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'dart:math';
+
 import 'package:flauncher/custom_traversal_policy.dart';
 import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/providers/launcher_state.dart';
 import 'package:flauncher/providers/wallpaper_service.dart';
 import 'package:flauncher/theme/emerald_shrine.dart';
+import 'package:flauncher/widgets/app_row_fit.dart';
 import 'package:flauncher/widgets/apps_grid.dart';
 import 'package:flauncher/widgets/category_row.dart';
 import 'package:flauncher/widgets/emerald_backdrop.dart';
@@ -50,27 +53,40 @@ class FLauncher extends StatelessWidget {
                 visible: state.launcherVisible),
             child: Scaffold(
                 backgroundColor: Colors.transparent,
-                appBar: FocusAwareAppBar(),
-                body: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    child: Consumer<AppsService>(
-                        builder: (context, appsService, _) {
-                      if (appsService.initialized) {
-                        return SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              _sections(appsService.launcherSections),
-                              const RecommendationsRow(),
-                            ],
-                          ),
-                        );
-                      } else {
-                        return _emptyState(context);
-                      }
-                    }))))
+                body: Consumer<AppsService>(
+                    builder: (context, appsService, _) {
+                  if (!appsService.initialized) {
+                    return _emptyState(context);
+                  }
+                  return LayoutBuilder(
+                    builder: (context, constraints) {
+                      final int rowCount = appsService.launcherSections
+                          .whereType<Category>()
+                          .where((category) => category.type == CategoryType.row)
+                          .length;
+                      final double barHeight =
+                          constraints.maxHeight < 600 ? 52 : FocusAwareAppBar.barHeight;
+                      final double rowHeight = homeRowHeight(
+                        rowWidth: max(0, constraints.maxWidth - 32),
+                        bodyHeight: max(0, constraints.maxHeight - barHeight - 8),
+                        rowCount: rowCount,
+                      );
+                      return Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                        child: Column(
+                          children: [
+                            FocusAwareAppBar(height: barHeight),
+                            _sections(appsService.launcherSections, rowHeight),
+                            const Expanded(child: RecommendationsRow()),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                })))
       ]));
 
-  Widget _sections(List<LauncherSection> sections) => Column(
+  Widget _sections(List<LauncherSection> sections, double rowHeight) => Column(
         children: sections.map((section) {
           final Key sectionKey = Key(section.id.toString());
           final Widget categoryWidget;
@@ -85,7 +101,8 @@ class FLauncher extends StatelessWidget {
               categoryWidget = CategoryRow(
                   key: sectionKey,
                   category: category,
-                  applications: category.applications);
+                  applications: category.applications,
+                  rowHeight: rowHeight);
             case CategoryType.grid:
               categoryWidget = AppsGrid(
                   key: sectionKey,
@@ -94,7 +111,7 @@ class FLauncher extends StatelessWidget {
           }
 
           return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 2),
               child: categoryWidget);
         }).toList(),
       );

@@ -32,12 +32,16 @@ import '../providers/settings_service.dart';
 class CategoryRow extends StatelessWidget {
   final Category category;
   final List<App> applications;
+  final double? rowHeight;
 
   CategoryRow({
     Key? key,
     required this.category,
     required this.applications,
+    this.rowHeight,
   }) : super(key: key);
+
+  double get _rowHeight => rowHeight ?? category.rowHeight.toDouble();
 
   @override
   Widget build(BuildContext context) {
@@ -49,12 +53,12 @@ class CategoryRow extends StatelessWidget {
         builder: (context, constraints) {
           final int visible = visibleAppCount(
             maxWidth: constraints.maxWidth,
-            rowHeight: category.rowHeight.toDouble(),
+            rowHeight: _rowHeight,
             total: applications.length,
           );
           final int hidden = applications.length - visible;
           return SizedBox(
-            height: category.rowHeight.toDouble(),
+            height: _rowHeight,
             child: ListView.custom(
               padding: const EdgeInsets.all(8),
               scrollDirection: Axis.horizontal,

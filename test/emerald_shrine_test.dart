@@ -134,6 +134,12 @@ void main() {
     expect(visibleAppCount(maxWidth: 400, rowHeight: 110, total: 8), 1);
     expect(visibleAppCount(maxWidth: double.infinity, rowHeight: 110, total: 8),
         8);
+
+    final double height = rowHeightForSlots(928, slots: 9);
+    expect(visibleAppCount(maxWidth: 928, rowHeight: height, total: 8), 8);
+    expect(
+        visibleAppCount(maxWidth: 928, rowHeight: height, total: 12),
+        greaterThanOrEqualTo(7));
   });
 
   test("platform chips use the brief's colours", () {

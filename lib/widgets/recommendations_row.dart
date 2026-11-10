@@ -16,9 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'dart:math';
+
 import 'package:flauncher/models/recommendation.dart';
 import 'package:flauncher/providers/recommendations_service.dart';
 import 'package:flauncher/theme/emerald_shrine.dart';
+import 'package:flauncher/widgets/app_row_fit.dart';
 import 'package:flauncher/widgets/ensure_visible.dart';
 import 'package:flauncher/widgets/section_heading.dart';
 import 'package:flutter/material.dart';
@@ -51,35 +54,58 @@ class _RecommendationsRowState extends State<RecommendationsRow> {
 
         final AppLocalizations localizations = AppLocalizations.of(context)!;
         final Recommendation focused = items[_focusedIndex];
+        // Posters keep their 156×248 proportion and only shrink when the
+        // column is shorter than that. The detail strip stays under them.
         return Padding(
-          padding: const EdgeInsets.only(top: 12, bottom: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SectionHeading(localizations.recommendationsRow),
-              SizedBox(
-                height: 248,
-                child: ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 12),
-                  scrollDirection: Axis.horizontal,
-                  clipBehavior: Clip.none,
-                  itemCount: items.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 14),
-                  itemBuilder: (context, index) => _RecommendationPoster(
-                    item: items[index],
-                    autofocus: index == 0,
-                    onFocused: () {
-                      if (_focusedIndex != index) {
-                        setState(() => _focusedIndex = index);
-                      }
-                    },
+              padding: const EdgeInsets.only(top: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SectionHeading(localizations.recommendationsRow),
+                  Expanded(
+                    child: LayoutBuilder(
+                      builder: (context, posterConstraints) {
+                        final double available = posterConstraints.maxHeight.isFinite
+                            ? posterConstraints.maxHeight
+                            : shrinePosterHeight;
+                        final double posterHeight = min(
+                            shrinePosterHeight, max(1, available));
+                        final double posterWidth = posterHeight *
+                            (shrinePosterWidth / shrinePosterHeight);
+                        return Align(
+                          alignment: Alignment.topLeft,
+                          child: SizedBox(
+                            height: posterHeight,
+                            child: ListView.separated(
+                              key: const Key('recommendation-posters'),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              scrollDirection: Axis.horizontal,
+                              clipBehavior: Clip.none,
+                              itemCount: items.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(width: 14),
+                              itemBuilder: (context, index) =>
+                                  _RecommendationPoster(
+                                item: items[index],
+                                width: posterWidth,
+                                autofocus: index == 0,
+                                onFocused: () {
+                                  if (_focusedIndex != index) {
+                                    setState(() => _focusedIndex = index);
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
+                  _DetailStrip(item: focused),
+                ],
               ),
-              _DetailStrip(item: focused),
-            ],
-          ),
-        );
+            );
       },
     );
   }
@@ -132,11 +158,13 @@ class _DetailStrip extends StatelessWidget {
 
 class _RecommendationPoster extends StatefulWidget {
   final Recommendation item;
+  final double width;
   final bool autofocus;
   final VoidCallback onFocused;
 
   const _RecommendationPoster({
     required this.item,
+    required this.width,
     required this.autofocus,
     required this.onFocused,
   });
@@ -160,7 +188,7 @@ class _RecommendationPosterState extends State<_RecommendationPoster> {
         alignment: Alignment.center,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
-          width: 156,
+          width: widget.width,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(EmeraldShrine.posterRadius),
             boxShadow: _focused ? EmeraldShrine.focusShadows : const [],

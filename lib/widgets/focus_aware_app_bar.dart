@@ -14,11 +14,15 @@ import 'network_widget.dart';
 class FocusAwareAppBar extends StatefulWidget implements PreferredSizeWidget {
   static const double barHeight = 78;
 
+  final double height;
+
+  const FocusAwareAppBar({super.key, this.height = barHeight});
+
   @override
   State<StatefulWidget> createState() => _FocusAwareAppBarState();
 
   @override
-  Size get preferredSize => const Size.fromHeight(barHeight);
+  Size get preferredSize => Size.fromHeight(height);
 }
 
 class _FocusAwareAppBarState extends State<FocusAwareAppBar> {
@@ -36,7 +40,7 @@ class _FocusAwareAppBarState extends State<FocusAwareAppBar> {
             child: AnimatedContainer(
               curve: Curves.easeOut,
               duration: const Duration(milliseconds: 250),
-              height: focused ? FocusAwareAppBar.barHeight : 0,
+              height: focused ? this.widget.height : 0,
               child: widget!,
             ),
           );
@@ -44,13 +48,15 @@ class _FocusAwareAppBarState extends State<FocusAwareAppBar> {
 
         return widget!;
       },
-      child: const _EmeraldStatusBar(),
+      child: _EmeraldStatusBar(barHeight: widget.height),
     );
   }
 }
 
 class _EmeraldStatusBar extends StatelessWidget {
-  const _EmeraldStatusBar();
+  final double barHeight;
+
+  const _EmeraldStatusBar({required this.barHeight});
 
   @override
   Widget build(BuildContext context) {
@@ -67,13 +73,17 @@ class _EmeraldStatusBar extends StatelessWidget {
         timeFormat: service.timeFormat,
       ),
       builder: (context, settings, _) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(28, 10, 24, 6),
+        return SizedBox(
+          height: barHeight,
+          child: Padding(
+          padding: EdgeInsets.fromLTRB(28, barHeight < 64 ? 4 : 10, 24, 4),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               if (settings.showTimeInStatusBar)
-                _StatusTime(format: settings.timeFormat),
+                _StatusTime(
+                    format: settings.timeFormat,
+                    fontSize: barHeight < 64 ? 28 : 40),
               if (settings.showTimeInStatusBar &&
                   settings.showDateInStatusBar) ...[
                 const SizedBox(width: 16),
@@ -92,6 +102,7 @@ class _EmeraldStatusBar extends StatelessWidget {
               const _AjustesButton(),
             ],
           ),
+        ),
         );
       },
     );
@@ -100,8 +111,9 @@ class _EmeraldStatusBar extends StatelessWidget {
 
 class _StatusTime extends StatefulWidget {
   final String format;
+  final double fontSize;
 
-  const _StatusTime({required this.format});
+  const _StatusTime({required this.format, this.fontSize = 40});
 
   @override
   State<_StatusTime> createState() => _StatusTimeState();
@@ -135,7 +147,7 @@ class _StatusTimeState extends State<_StatusTime> {
   Widget build(BuildContext context) {
     return Text(
       _format(_now, widget.format),
-      style: EmeraldShrine.heading(fontSize: 40),
+      style: EmeraldShrine.heading(fontSize: widget.fontSize),
     );
   }
 

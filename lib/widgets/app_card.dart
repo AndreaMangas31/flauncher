@@ -264,15 +264,11 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
               )),
             );
           } else {
-            return const Padding(
-              padding: EdgeInsets.all(8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 0, width: 16),
-                  Text("Loading")
-                ],
+            return const Center(
+              child: SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
               ),
             );
           }
