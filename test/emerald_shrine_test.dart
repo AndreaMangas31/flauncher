@@ -118,6 +118,11 @@ void main() {
           asset == shrineDuskAsset || asset == shrineNightAsset;
       expect(
           await resolveShrineAsset(ShrineDayPart.dusk, both), shrineDuskAsset);
+
+      Future<bool> jpeg(String asset) async => asset == shrineNightAssetJpeg;
+      expect(await resolveShrineAsset(ShrineDayPart.night, jpeg),
+          shrineNightAssetJpeg);
+      expect(await resolveShrineAsset(ShrineDayPart.dusk, jpeg), shrineDayAsset);
     });
   });
 

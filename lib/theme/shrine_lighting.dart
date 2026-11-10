@@ -18,12 +18,16 @@
 
 import 'package:flutter/services.dart';
 
-/// Day plate shipped with the theme. Dusk and night plates are optional:
-/// drop `emerald_shrine_dusk.jpg` or `emerald_shrine_night.jpg` next to the
-/// day image and they are picked up on the next launch. No code change.
-const String shrineDayAsset = 'assets/backgrounds/emerald_shrine_day.jpg';
-const String shrineDuskAsset = 'assets/backgrounds/emerald_shrine_dusk.jpg';
-const String shrineNightAsset = 'assets/backgrounds/emerald_shrine_night.jpg';
+/// Day plate shipped with the theme, lossy WebP. Dusk and night plates are
+/// optional: drop `emerald_shrine_dusk.webp` or `emerald_shrine_night.webp`
+/// next to the day image (a `.jpg` of the same name still works) and they
+/// are picked up on the next launch. No code change. No AVIF.
+const String shrineDayAsset = 'assets/backgrounds/emerald_shrine_day.webp';
+const String shrineDayAssetJpeg = 'assets/backgrounds/emerald_shrine_day.jpg';
+const String shrineDuskAsset = 'assets/backgrounds/emerald_shrine_dusk.webp';
+const String shrineDuskAssetJpeg = 'assets/backgrounds/emerald_shrine_dusk.jpg';
+const String shrineNightAsset = 'assets/backgrounds/emerald_shrine_night.webp';
+const String shrineNightAssetJpeg = 'assets/backgrounds/emerald_shrine_night.jpg';
 
 const Duration shrineLightingPollInterval = Duration(minutes: 3);
 const Duration shrineLightingFade = Duration(milliseconds: 800);
@@ -82,19 +86,26 @@ Future<String> resolveShrineAsset(
   ShrineDayPart part,
   Future<bool> Function(String asset) exists,
 ) async {
+  final List<String> preferred;
   switch (part) {
     case ShrineDayPart.dusk:
-      if (await exists(shrineDuskAsset)) {
-        return shrineDuskAsset;
-      }
-      return shrineDayAsset;
+      preferred = const [shrineDuskAsset, shrineDuskAssetJpeg];
     case ShrineDayPart.night:
-      if (await exists(shrineNightAsset)) {
-        return shrineNightAsset;
-      }
-      return shrineDayAsset;
+      preferred = const [shrineNightAsset, shrineNightAssetJpeg];
     case ShrineDayPart.morning:
     case ShrineDayPart.afternoon:
-      return shrineDayAsset;
+      preferred = const [];
   }
+  for (final String asset in preferred) {
+    if (await exists(asset)) {
+      return asset;
+    }
+  }
+  if (await exists(shrineDayAsset)) {
+    return shrineDayAsset;
+  }
+  if (await exists(shrineDayAssetJpeg)) {
+    return shrineDayAssetJpeg;
+  }
+  return shrineDayAsset;
 }
