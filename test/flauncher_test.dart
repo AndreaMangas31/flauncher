@@ -144,6 +144,14 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    // Wifi and Entradas sit to the left of Ajustes on the same pill row.
+    for (var step = 0; step < 4; step++) {
+      final Element? settings = findSettingsIcon(tester);
+      if (settings != null && Focus.of(settings).hasFocus) {
+        break;
+      }
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    }
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pump();
 
@@ -502,8 +510,14 @@ void main() {
 
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
-    // No idea why I had to add another arrowRight
-    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    // Wifi and Entradas are focusable pills before Ajustes.
+    for (var step = 0; step < 4; step++) {
+      final Element? settings = findSettingsIcon(tester);
+      if (settings != null && Focus.of(settings).hasFocus) {
+        break;
+      }
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    }
 
     Element? settingsIcon = findSettingsIcon(tester);
     expect(settingsIcon, isNotNull);
@@ -518,12 +532,26 @@ void main() {
     expect(Focus.of(tv2!).hasFocus, isTrue);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+    for (var step = 0; step < 4; step++) {
+      if (Focus.of(settingsIcon).hasFocus) {
+        break;
+      }
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    }
     expect(Focus.of(settingsIcon).hasFocus, isTrue);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
-    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
-    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    for (var step = 0; step < 6; step++) {
+      if (Focus.of(settingsIcon).hasFocus) {
+        break;
+      }
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+      if (Focus.of(settingsIcon).hasFocus) {
+        break;
+      }
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    }
     expect(Focus.of(settingsIcon).hasFocus, isTrue);
   });
 }

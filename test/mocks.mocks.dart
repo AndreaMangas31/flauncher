@@ -712,6 +712,38 @@ class MockAppsService extends _i1.Mock implements _i14.AppsService {
       ) as _i7.Future<_i11.Uint8List>);
 
   @override
+  _i7.Future<void> openWifiSettings() => (super.noSuchMethod(
+        Invocation.method(
+          #openWifiSettings,
+          [],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<List<Map<String, String>>> hdmiInputs() => (super.noSuchMethod(
+        Invocation.method(
+          #hdmiInputs,
+          [],
+        ),
+        returnValue: _i7.Future<List<Map<String, String>>>.value(
+            <Map<String, String>>[]),
+        returnValueForMissingStub: _i7.Future<List<Map<String, String>>>.value(
+            <Map<String, String>>[]),
+      ) as _i7.Future<List<Map<String, String>>>);
+
+  @override
+  _i7.Future<bool> openHdmiInput(String? inputId) => (super.noSuchMethod(
+        Invocation.method(
+          #openHdmiInput,
+          [inputId],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+        returnValueForMissingStub: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+
+  @override
   _i7.Future<void> launchApp(_i15.App? app) => (super.noSuchMethod(
         Invocation.method(
           #launchApp,

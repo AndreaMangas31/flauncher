@@ -61,7 +61,10 @@ int visibleAppCount({
   if (total <= appSlots) {
     return total;
   }
-  return max(1, appSlots - 1);
+  // The overflow tile takes one slot, and it has to stay on screen together
+  // with the reserved tiles. A very narrow row may show only the overflow.
+  final int withOverflow = appSlots - 1;
+  return withOverflow < 1 ? 0 : withOverflow;
 }
 
 /// Row height whose banners leave [slots] places across [rowWidth].

@@ -84,6 +84,9 @@ public class MainActivity extends FlutterActivity
                 case "launchLiveTv" -> result.success(launchLiveTv());
                 case "openRecommendation" -> result.success(openRecommendation(call.arguments()));
                 case "openSettings" -> result.success(openSettings());
+                case "openWifiSettings" -> result.success(openWifiSettings());
+                case "listHdmiInputs" -> result.success(TvInputs.list(this));
+                case "openHdmiInput" -> result.success(TvInputs.open(this, call.arguments() instanceof String id ? id : ""));
                 case "openAppInfo" -> result.success(openAppInfo(call.arguments()));
                 case "uninstallApp" -> result.success(uninstallApp(call.arguments()));
                 case "isDefaultLauncher" -> result.success(isDefaultLauncher());
@@ -410,6 +413,25 @@ public class MainActivity extends FlutterActivity
 
     private boolean openSettings() {
         return launchActivityFromAction(Settings.ACTION_SETTINGS);
+    }
+
+    private boolean openWifiSettings() {
+        String[] actions = {
+                Settings.ACTION_WIFI_SETTINGS,
+                Settings.ACTION_WIRELESS_SETTINGS,
+                Settings.ACTION_SETTINGS
+        };
+        PackageManager packageManager = getPackageManager();
+        for (String action : actions) {
+            Intent intent = new Intent(action);
+            if (intent.resolveActivity(packageManager) == null) {
+                continue;
+            }
+            if (tryStartActivity(intent)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean openAppInfo(String packageName) {

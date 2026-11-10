@@ -16,8 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'package:flauncher/default_layout.dart';
 import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/widgets/app_card.dart';
+import 'package:flauncher/widgets/inputs_picker.dart';
 import 'package:flauncher/widgets/app_row_fit.dart';
 import 'package:flauncher/widgets/category_container_common.dart';
 import 'package:flauncher/widgets/more_apps_tile.dart';
@@ -43,18 +45,22 @@ class CategoryRow extends StatelessWidget {
 
   double get _rowHeight => rowHeight ?? category.rowHeight.toDouble();
 
+  bool get _inputsFirst => category.name == appsCategoryName;
+
   @override
   Widget build(BuildContext context) {
     Widget categoryContent;
-    if (applications.isEmpty) {
+    if (applications.isEmpty && !_inputsFirst) {
       categoryContent = categoryContainerEmptyState(context);
     } else {
       categoryContent = LayoutBuilder(
         builder: (context, constraints) {
+          final int leading = _inputsFirst ? 1 : 0;
           final int visible = visibleAppCount(
             maxWidth: constraints.maxWidth,
             rowHeight: _rowHeight,
             total: applications.length,
+            reservedSlots: leading,
           );
           final int hidden = applications.length - visible;
           return SizedBox(
@@ -64,10 +70,18 @@ class CategoryRow extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               clipBehavior: Clip.none,
               childrenDelegate: SliverChildBuilderDelegate(
-                childCount: visible + (hidden > 0 ? 1 : 0),
+                childCount: leading + visible + (hidden > 0 ? 1 : 0),
                 findChildIndexCallback: _findChildIndex,
                 (context, index) {
-                  if (index >= visible) {
+                  if (_inputsFirst && index == 0) {
+                    return const Padding(
+                      key: Key('inputs-tile'),
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: InputsTile(),
+                    );
+                  }
+                  final int appIndex = index - leading;
+                  if (appIndex >= visible) {
                     return Padding(
                       key: const Key('more-apps'),
                       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -79,13 +93,13 @@ class CategoryRow extends StatelessWidget {
                     );
                   }
                   return Padding(
-                    key: Key(applications[index].packageName),
+                    key: Key(applications[appIndex].packageName),
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: AppCard(
                       category: category,
-                      application: applications[index],
-                      autofocus: index == 0,
-                      onMove: (direction) => _onMove(context, direction, index),
+                      application: applications[appIndex],
+                      autofocus: !_inputsFirst && appIndex == 0,
+                      onMove: (direction) => _onMove(context, direction, appIndex),
                       onMoveEnd: () => _onMoveEnd(context),
                     ),
                   );
@@ -115,9 +129,18 @@ class CategoryRow extends StatelessWidget {
   }
 
   int? _findChildIndex(Key key) {
-    final int index = applications.indexWhere(
-        (app) => app.packageName == (key as ValueKey<String>).value);
-    return index < 0 ? null : index;
+    if (key is! ValueKey<String>) {
+      return null;
+    }
+    if (key.value == 'inputs-tile') {
+      return _inputsFirst ? 0 : null;
+    }
+    final int index = applications
+        .indexWhere((app) => app.packageName == key.value);
+    if (index < 0) {
+      return null;
+    }
+    return index + (_inputsFirst ? 1 : 0);
   }
 
   void _onMove(BuildContext context, AxisDirection direction, int index) {

@@ -407,6 +407,12 @@ class AppsService extends ChangeNotifier with WidgetsBindingObserver {
     return _fLauncherChannel.getApplicationIcon(packageName);
   }
 
+  Future<void> openWifiSettings() => _fLauncherChannel.openWifiSettings();
+
+  Future<List<Map<String, String>>> hdmiInputs() => _fLauncherChannel.listHdmiInputs();
+
+  Future<bool> openHdmiInput(String inputId) => _fLauncherChannel.openHdmiInput(inputId);
+
   Future<void> launchApp(App app) {
     if (app.action == liveTvAction) {
       return _fLauncherChannel.launchLiveTv();

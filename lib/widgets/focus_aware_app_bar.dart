@@ -8,7 +8,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../providers/apps_service.dart';
 import '../providers/settings_service.dart';
+import 'inputs_picker.dart';
 import 'network_widget.dart';
 
 class FocusAwareAppBar extends StatefulWidget implements PreferredSizeWidget {
@@ -97,8 +99,10 @@ class _EmeraldStatusBar extends StatelessWidget {
               if (settings.showDateInStatusBar)
                 const Flexible(child: _StatusDate()),
               const Spacer(),
-              const NetworkWidget(),
-              const SizedBox(width: 18),
+              const _WifiButton(),
+              const SizedBox(width: 10),
+              const _EntradasButton(),
+              const SizedBox(width: 10),
               const _AjustesButton(),
             ],
           ),
@@ -203,6 +207,59 @@ class _StatusDateState extends State<_StatusDate> {
   }
 }
 
+ButtonStyle _pillStyle() => ButtonStyle(
+      foregroundColor: const WidgetStatePropertyAll(EmeraldShrine.text),
+      padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(horizontal: 14, vertical: 8)),
+      shape: WidgetStatePropertyAll(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      ),
+      backgroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.focused)) {
+          return EmeraldShrine.accent.withOpacity(0.18);
+        }
+        return EmeraldShrine.surfaceTint;
+      }),
+      side: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.focused)) {
+          return const BorderSide(color: EmeraldShrine.accent, width: 2);
+        }
+        return BorderSide(color: Colors.white.withOpacity(0.10));
+      }),
+      overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+    );
+
+class _WifiButton extends StatelessWidget {
+  const _WifiButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      key: const Key('wifi-button'),
+      tooltip: 'Wi-Fi',
+      style: _pillStyle(),
+      onPressed: () => context.read<AppsService>().openWifiSettings(),
+      icon: const NetworkWidget(),
+    );
+  }
+}
+
+class _EntradasButton extends StatelessWidget {
+  const _EntradasButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations localizations = AppLocalizations.of(context)!;
+    return TextButton.icon(
+      key: const Key('inputs-button'),
+      style: _pillStyle(),
+      icon: const Icon(Icons.input),
+      label: Text(localizations.inputs, style: EmeraldShrine.body(fontSize: 16)),
+      onPressed: () => showInputsPicker(context),
+    );
+  }
+}
+
 class _AjustesButton extends StatelessWidget {
   const _AjustesButton();
 
@@ -211,26 +268,7 @@ class _AjustesButton extends StatelessWidget {
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     return TextButton.icon(
       key: const Key('settings-button'),
-      style: ButtonStyle(
-        foregroundColor: const WidgetStatePropertyAll(EmeraldShrine.text),
-        padding: const WidgetStatePropertyAll(
-            EdgeInsets.symmetric(horizontal: 16, vertical: 10)),
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        ),
-        backgroundColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.focused)) {
-            return EmeraldShrine.accent.withOpacity(0.18);
-          }
-          return EmeraldShrine.surfaceTint;
-        }),
-        side: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.focused)) {
-            return const BorderSide(color: EmeraldShrine.accent, width: 2);
-          }
-          return BorderSide(color: Colors.white.withOpacity(0.10));
-        }),
-      ),
+      style: _pillStyle(),
       icon: const Icon(Icons.settings_outlined),
       label:
           Text(localizations.settings, style: EmeraldShrine.body(fontSize: 16)),
