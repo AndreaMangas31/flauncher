@@ -21,6 +21,7 @@ import 'dart:collection';
 import 'package:collection/collection.dart' as collection;
 
 import 'package:drift/drift.dart';
+import 'package:flauncher/apps_order.dart';
 import 'package:flauncher/database.dart';
 import 'package:flauncher/default_layout.dart';
 import 'package:flauncher/flauncher_channel.dart';
@@ -35,6 +36,7 @@ class AppsService extends ChangeNotifier {
   final FLauncherDatabase _database;
 
   bool _initialized = false;
+  bool _usageStatsAvailable = false;
 
   List<LauncherSection> _launcherSections = List.empty(growable: true);
   Map<String, App> _applications = Map();
@@ -145,7 +147,11 @@ class AppsService extends ChangeNotifier {
 
     return _database.transaction(() async {
       await addCategory(musicCategoryName, shouldNotifyListeners: false);
-      final int appsCategoryId = await addCategory(appsCategoryName, shouldNotifyListeners: false);
+      final int appsCategoryId = await addCategory(
+        appsCategoryName,
+        sort: CategorySort.pinnedAndRecent,
+        shouldNotifyListeners: false,
+      );
 
       final Category? appsCategory = _categoriesById[appsCategoryId];
       final Category? musicCategory = _categoryNamed(musicCategoryName);
@@ -161,6 +167,9 @@ class AppsService extends ChangeNotifier {
       }
 
       _launcherSections.sort((a, b) => a.order.compareTo(b.order));
+      if (appsCategory != null) {
+        sortCategory(appsCategory);
+      }
     });
   }
 
@@ -333,14 +342,11 @@ class AppsService extends ChangeNotifier {
     if (category.sort == CategorySort.alphabetical) {
       category.applications.sortBy((application) => application.name);
     } else {
-      category.applications.sortBy<num>((application) => application.categoryOrders[category.id]!);
+      category.applications.sortBy<num>((application) => application.categoryOrders[category.id] ?? 1 << 30);
     }
 
-    if (category.name == appsCategoryName) {
-      final int index = category.applications.indexWhere((application) => application.liveTv);
-      if (index > 0) {
-        category.applications.insert(0, category.applications.removeAt(index));
-      }
+    if (category.sort == CategorySort.pinnedAndRecent) {
+      applyPinnedThenRecentOrder(category.applications, usageAvailable: _usageStatsAvailable);
     }
   }
 
@@ -451,7 +457,14 @@ class AppsService extends ChangeNotifier {
 
     try {
       newCategoryId = await _database.transaction(() async {
-        int newCategoryId = await _database.insertCategory(CategoriesCompanion.insert(name: categoryName, order: 0));
+        int newCategoryId = await _database.insertCategory(CategoriesCompanion.insert(
+          name: categoryName,
+          order: 0,
+          sort: Value(sort),
+          type: Value(type),
+          columnsCount: Value(columnsCount),
+          rowHeight: Value(rowHeight),
+        ));
         await _database.updateCategories(orderedCategories);
 
         return newCategoryId;

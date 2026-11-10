@@ -57,6 +57,7 @@
     "layout": "Distribución",
     "loading": "Cargando",
     "manual": "Manual",
+    "pinnedAndRecent": "Favoritas + uso reciente",
     "modifySection": "Modificar sección",
     "mustNotBeEmpty": "No debe estar vacío",
     "name": "Nombre",

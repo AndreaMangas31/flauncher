@@ -30,6 +30,10 @@ enum CategorySort
 {
   manual,
   alphabetical,
+
+  /// Pinned favourites first, then the other apps by recent use when that
+  /// data is available. Without usage access the other apps stay put.
+  pinnedAndRecent,
 }
 
 enum CategoryType

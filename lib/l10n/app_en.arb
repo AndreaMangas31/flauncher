@@ -53,6 +53,7 @@
     "layout": "Layout",
     "loading": "Loading",
     "manual": "Manual",
+    "pinnedAndRecent": "Favourites + recent use",
     "modifySection": "Modify section",
     "mustNotBeEmpty": "Must not be empty",
     "name": "Name",

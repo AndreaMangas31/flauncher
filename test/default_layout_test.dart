@@ -56,9 +56,10 @@ void main() {
 
     final List<Category> categories = service.launcherSections.whereType<Category>().toList();
     expect(categories.map((category) => category.name).toList(), [appsCategoryName, musicCategoryName]);
+    expect(categories[0].sort, CategorySort.pinnedAndRecent);
     expect(
       categories[0].applications.map((app) => app.packageName).toList(),
-      ["com.crunchyroll.crunchyroid", "com.disney.disneyplus", "com.netflix.ninja"],
+      [crunchyrollPackage, netflixPackage, disneyPlusPackage],
     );
     expect(categories[0].applications.every((app) => !app.liveTv), isTrue);
     expect(
@@ -100,7 +101,11 @@ void main() {
 
     final Category apps = service.launcherSections.whereType<Category>().first;
     expect(apps.name, appsCategoryName);
-    expect(apps.applications.first.packageName, "com.google.android.tv");
+    expect(apps.applications.map((app) => app.packageName).toList(), [
+      "com.google.android.tv",
+      netflixPackage,
+      filminPackage,
+    ]);
     expect(apps.applications.first.liveTv, isTrue);
     expect(apps.applications.first.action, liveTvAction);
     expect(apps.applications.map((app) => app.packageName), isNot(contains(youtubeTvPackage)));
