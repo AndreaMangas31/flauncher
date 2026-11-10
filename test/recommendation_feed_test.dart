@@ -16,14 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flauncher/models/recommendation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+const List<String> _requiredItemFields = [
+  "title",
+  "description",
+  "platform",
+  "type",
+  "status",
+  "imageUrl",
+];
+
 void main() {
   test("parses the sample feed", () {
-    final String source = File("recommendations/recommendations.json").readAsStringSync();
+    final String source = File("test/fixtures/recommendations.json").readAsStringSync();
     final RecommendationFeed? feed = RecommendationFeed.tryParse(source);
 
     expect(feed, isNotNull);
@@ -35,6 +45,29 @@ void main() {
     expect(feed.items.first.packageName, "com.netflix.ninja");
     expect(feed.items[1].type, "película");
     expect(feed.items[2].deepLink, isNull);
+  });
+
+  test("live feed matches the schema", () {
+    final String source = File("recommendations/recommendations.json").readAsStringSync();
+    final dynamic decoded = jsonDecode(source);
+    expect(decoded, isA<Map>());
+    final dynamic items = decoded["items"];
+    expect(items, isA<List>());
+    expect(items, isNotEmpty);
+    expect(decoded["updatedAt"], isA<String>());
+    expect((decoded["updatedAt"] as String).trim(), isNotEmpty);
+
+    for (final dynamic item in items) {
+      expect(item, isA<Map>());
+      for (final String field in _requiredItemFields) {
+        expect(item[field], isA<String>(), reason: field);
+        expect((item[field] as String).trim(), isNotEmpty, reason: field);
+      }
+    }
+
+    final RecommendationFeed? feed = RecommendationFeed.tryParse(source);
+    expect(feed, isNotNull);
+    expect(feed!.items, hasLength(items.length));
   });
 
   test("rejects invalid feeds and skips broken items", () {
