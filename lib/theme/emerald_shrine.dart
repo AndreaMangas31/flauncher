@@ -52,6 +52,7 @@ class EmeraldShrine {
         fontVariations: const [FontVariation.weight(600)],
         color: color,
         height: 1.15,
+        decoration: TextDecoration.none,
       );
 
   static TextStyle posterTitle({double fontSize = 16, Color color = text}) =>
@@ -62,6 +63,7 @@ class EmeraldShrine {
         fontVariations: const [FontVariation.weight(700)],
         color: color,
         height: 1.15,
+        decoration: TextDecoration.none,
       );
 
   static TextStyle body(
@@ -75,6 +77,7 @@ class EmeraldShrine {
         fontVariations: [FontVariation.weight(weight.value.toDouble())],
         color: color,
         height: 1.35,
+        decoration: TextDecoration.none,
       );
 
   static TextTheme get textTheme {

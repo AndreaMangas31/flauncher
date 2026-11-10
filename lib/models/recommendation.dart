@@ -28,6 +28,9 @@ class Recommendation {
   final String? deepLink;
   final String? packageName;
 
+  /// Labels from the feed. Empty when the feed does not include any.
+  final List<String> genres;
+
   const Recommendation({
     required this.title,
     required this.description,
@@ -37,6 +40,7 @@ class Recommendation {
     required this.imageUrl,
     this.deepLink,
     this.packageName,
+    this.genres = const [],
   });
 }
 
@@ -104,7 +108,22 @@ class RecommendationFeed {
       imageUrl: imageUrl,
       deepLink: _optionalText(entry["deepLink"]),
       packageName: _optionalText(entry["packageName"]),
+      genres: _genres(entry["genres"]),
     );
+  }
+
+  static List<String> _genres(dynamic value) {
+    if (value is! List) {
+      return const [];
+    }
+    final List<String> genres = [];
+    for (final dynamic entry in value) {
+      final String? genre = _text(entry);
+      if (genre != null) {
+        genres.add(genre);
+      }
+    }
+    return genres;
   }
 
   static String? _text(dynamic value) {

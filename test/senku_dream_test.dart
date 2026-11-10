@@ -18,9 +18,11 @@
 
 import 'package:flauncher/dream_feed.dart';
 import 'package:flauncher/models/recommendation.dart';
+import 'package:flauncher/theme/emerald_shrine.dart';
 import 'package:flauncher/theme/shrine_clock.dart';
 import 'package:flauncher/widgets/senku_dream.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 
@@ -50,6 +52,11 @@ void main() {
     expect(items.single.title, "Black Clover T2");
     expect(recommendationsFromCache(null), isEmpty);
     expect(recommendationsFromCache("not json"), isEmpty);
+    const String withGenres = '''
+{"updatedAt":"2026-11-10T21:00:00Z","items":[
+  {"title":"Black Clover T2","description":"Magic battles.","platform":"Crunchyroll","type":"serie","status":"airing","imageUrl":"https://example.com/a.jpg","genres":["Acción","Anime"]}
+]}''';
+    expect(recommendationsFromCache(withGenres).single.genres, ["Acción", "Anime"]);
   });
 
   test("clock drift and poster zoom stay small", () {
@@ -89,6 +96,10 @@ void main() {
       expect(find.text("Black Clover T2"), findsOneWidget);
       expect(find.text("Crunchyroll"), findsOneWidget);
       expect(find.text("Magic battles."), findsOneWidget);
+      expect(find.text("Pantalla bloqueada"), findsOneWidget);
+      expect(find.text("Pulsa OK para desbloquear"), findsOneWidget);
+      expect(find.text("Continuar viendo"), findsNothing);
+      expect(find.byKey(const Key("dream-genres")), findsNothing);
     });
   });
 
@@ -143,6 +154,68 @@ void main() {
       expect(find.text("La emperatriz divorciada"), findsWidgets);
       expect(find.text("A court romance."), findsWidgets);
       expect(find.text("Disney+"), findsWidgets);
+      expect(find.text("Continuar viendo"), findsNothing);
+    });
+  });
+
+  testWidgets("a 1080p dream keeps the panel on screen without yellow underlines",
+      (tester) async {
+    await mockNetworkImagesFor(() async {
+      tester.view.physicalSize = const Size(1920, 1080);
+      tester.view.devicePixelRatio = 2.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      const String synopsis =
+          "Los cazadores se enfrentan en prueba tras prueba mientras Netflix España sigue la temporada completa con un final que no cabe en una sola línea.";
+      final DateTime moment = DateTime(2026, 1, 24, 23, 53);
+      await tester.pumpWidget(MaterialApp(
+        theme: EmeraldShrine.theme(),
+        home: SenkuDream(
+          animate: false,
+          clock: () => moment,
+          items: const [
+            Recommendation(
+              title: "Black Clover T2",
+              description: synopsis,
+              platform: "Netflix",
+              type: "serie",
+              status: "airing",
+              imageUrl: "https://example.com/a.jpg",
+              genres: ["Acción"],
+            ),
+          ],
+        ),
+      ));
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+
+      final Size logical =
+          tester.view.physicalSize / tester.view.devicePixelRatio;
+      final Rect panel = tester.getRect(find.byKey(const Key("dream-panel")));
+      final Rect description =
+          tester.getRect(find.byKey(const Key("dream-description")));
+      expect(panel.left, greaterThanOrEqualTo(logical.width * 0.04));
+      expect(panel.right, lessThanOrEqualTo(logical.width * 0.96));
+      expect(description.right, lessThanOrEqualTo(panel.right));
+      expect(description.left, greaterThanOrEqualTo(panel.left));
+
+      final Text synopsisText =
+          tester.widget(find.byKey(const Key("dream-description")));
+      expect(synopsisText.maxLines, 3);
+      expect(synopsisText.overflow, TextOverflow.ellipsis);
+      expect(find.text("Acción"), findsOneWidget);
+      expect(find.text("Continuar viendo"), findsNothing);
+      expect(find.text("Pantalla bloqueada"), findsOneWidget);
+
+      for (final String sample in ["23:53", "Netflix", synopsis]) {
+        final RenderParagraph paragraph = tester.renderObject(find.text(sample));
+        final TextSpan span = paragraph.text as TextSpan;
+        expect(span.style?.decoration, isNot(TextDecoration.underline));
+        expect(span.style?.decoration, anyOf(isNull, TextDecoration.none));
+      }
+      final RenderParagraph clock = tester.renderObject(find.text("23:53"));
+      expect((clock.text as TextSpan).style?.fontFamily, EmeraldShrine.outfitFamily);
     });
   });
 }
