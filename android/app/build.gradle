@@ -39,14 +39,23 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-def keystorePassword = System.getenv("FLAUNCHER_KEYSTORE_PASSWORD")
-def keyAlias = System.getenv("FLAUNCHER_SIGNING_KEY_ALIAS")
-def keyPassword = System.getenv("FLAUNCHER_SIGNING_KEY_PASSWORD")
-def keystoreFile = file("upload-keystore.jks")
-def hasReleaseKeystore = keystoreFile.exists() &&
-        keystorePassword != null && !keystorePassword.isEmpty() &&
-        keyAlias != null && !keyAlias.isEmpty() &&
-        keyPassword != null && !keyPassword.isEmpty()
+// Names must not match signingConfigs properties (keyAlias, keyPassword, ...).
+// Inside that DSL a same-named variable is used as the receiver, so
+// `keyAlias keyAlias` tries to call the String.
+def releaseStorePassword = System.getenv("FLAUNCHER_KEYSTORE_PASSWORD")
+def releaseKeyAlias = System.getenv("FLAUNCHER_SIGNING_KEY_ALIAS")
+def releaseKeyPassword = System.getenv("FLAUNCHER_SIGNING_KEY_PASSWORD")
+def releaseKeystoreFile = file("upload-keystore.jks")
+def hasReleaseKeystore = releaseKeystoreFile.exists() &&
+        releaseStorePassword != null && !releaseStorePassword.isEmpty() &&
+        releaseKeyAlias != null && !releaseKeyAlias.isEmpty() &&
+        releaseKeyPassword != null && !releaseKeyPassword.isEmpty()
+
+if (hasReleaseKeystore) {
+    println "Release signing: using upload-keystore.jks (PKCS12), alias ${releaseKeyAlias}"
+} else {
+    println "Release signing: no release keystore, using the debug key"
+}
 
 android {
     defaultConfig {
@@ -62,10 +71,11 @@ android {
         debug {}
         release {
             if (hasReleaseKeystore) {
-                storeFile keystoreFile
-                storePassword keystorePassword
-                keyAlias keyAlias
-                keyPassword keyPassword
+                storeFile releaseKeystoreFile
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+                storeType "PKCS12"
             }
         }
     }
