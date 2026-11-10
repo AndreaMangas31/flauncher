@@ -16,11 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flauncher/database.dart';
+import 'package:flauncher/models/app.dart';
+import 'package:flauncher/models/category.dart';
 import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/widgets/application_info_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
@@ -61,8 +64,8 @@ void main() {
       name: "FLauncher",
       version: "1.0.0",
     );
-    when(appsService.categoriesWithApps).thenReturn([
-      CategoryWithApps(category, [app]),
+    when(appsService.launcherSections).thenReturn([
+      withApps(category, [app]),
     ]);
     when(appsService.applications).thenReturn([]);
     await _pumpWidgetWithProviders(tester, appsService, category, app);
@@ -82,8 +85,8 @@ void main() {
       name: "FLauncher",
       version: "1.0.0",
     );
-    when(appsService.categoriesWithApps).thenReturn([
-      CategoryWithApps(category, [app]),
+    when(appsService.launcherSections).thenReturn([
+      withApps(category, [app]),
     ]);
     when(appsService.applications).thenReturn([]);
     await _pumpWidgetWithProviders(tester, appsService, category, app);
@@ -104,8 +107,8 @@ void main() {
       name: "FLauncher",
       version: "1.0.0",
     );
-    when(appsService.categoriesWithApps).thenReturn([
-      CategoryWithApps(category, [app]),
+    when(appsService.launcherSections).thenReturn([
+      withApps(category, [app]),
     ]);
     when(appsService.applications).thenReturn([]);
     await _pumpWidgetWithProviders(tester, appsService, category, app);
@@ -127,8 +130,8 @@ void main() {
       name: "FLauncher",
       version: "1.0.0",
     );
-    when(appsService.categoriesWithApps).thenReturn([
-      CategoryWithApps(category, [app]),
+    when(appsService.launcherSections).thenReturn([
+      withApps(category, [app]),
     ]);
     when(appsService.applications).thenReturn([]);
     await _pumpWidgetWithProviders(tester, appsService, category, app);
@@ -156,6 +159,13 @@ Future<void> _pumpWidgetWithProviders(
         ChangeNotifierProvider<AppsService>.value(value: appsService),
       ],
       builder: (_, __) => MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
         home: ApplicationInfoPanel(
           category: category,
           application: application,

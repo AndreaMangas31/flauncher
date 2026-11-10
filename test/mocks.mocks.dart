@@ -395,6 +395,32 @@ class MockFLauncherChannel extends _i1.Mock implements _i10.FLauncherChannel {
       ) as _i7.Future<void>);
 
   @override
+  _i7.Future<void> launchLiveTv() => (super.noSuchMethod(
+        Invocation.method(
+          #launchLiveTv,
+          [],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<bool> openRecommendation(
+    String? deepLink,
+    String? packageName,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #openRecommendation,
+          [
+            deepLink,
+            packageName,
+          ],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+
+  @override
   _i7.Future<void> openSettings() => (super.noSuchMethod(
         Invocation.method(
           #openSettings,
@@ -464,6 +490,15 @@ class MockFLauncherChannel extends _i1.Mock implements _i10.FLauncherChannel {
       ) as _i7.Future<void>);
 
   @override
+  _i7.Future<Map<String, int>?> getUsageStats() => (super.noSuchMethod(
+        Invocation.method(
+          #getUsageStats,
+          [],
+        ),
+        returnValue: _i7.Future<Map<String, int>?>.value(),
+      ) as _i7.Future<Map<String, int>?>);
+
+  @override
   void addAppsChangedListener(void Function(Map<String, dynamic>)? listener) =>
       super.noSuchMethod(
         Invocation.method(
@@ -492,6 +527,18 @@ class MockWallpaperService extends _i1.Mock implements _i12.WallpaperService {
   MockWallpaperService() {
     _i1.throwOnMissingStub(this);
   }
+
+  @override
+  bool get ready => (super.noSuchMethod(
+        Invocation.getter(#ready),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  bool get hasCustomGradient => (super.noSuchMethod(
+        Invocation.getter(#hasCustomGradient),
+        returnValue: false,
+      ) as bool);
 
   @override
   _i2.FLauncherGradient get gradient => (super.noSuchMethod(
@@ -587,6 +634,12 @@ class MockAppsService extends _i1.Mock implements _i14.AppsService {
       ) as List<_i15.App>);
 
   @override
+  List<_i16.LauncherSection> get launcherSections => (super.noSuchMethod(
+        Invocation.getter(#launcherSections),
+        returnValue: <_i16.LauncherSection>[],
+      ) as List<_i16.LauncherSection>);
+
+  @override
   List<_i16.Category> get categories => (super.noSuchMethod(
         Invocation.getter(#categories),
         returnValue: <_i16.Category>[],
@@ -597,6 +650,37 @@ class MockAppsService extends _i1.Mock implements _i14.AppsService {
         Invocation.getter(#hasListeners),
         returnValue: false,
       ) as bool);
+
+  @override
+  void dispose() => super.noSuchMethod(
+        Invocation.method(
+          #dispose,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void didChangeAppLifecycleState(_i13.AppLifecycleState? state) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #didChangeAppLifecycleState,
+          [state],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i7.Future<void> refreshUsageStats({bool? shouldNotifyListeners = true}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #refreshUsageStats,
+          [],
+          {#shouldNotifyListeners: shouldNotifyListeners},
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
   void sortCategory(_i16.Category? category) => super.noSuchMethod(
@@ -723,10 +807,10 @@ class MockAppsService extends _i1.Mock implements _i14.AppsService {
       ) as _i7.Future<void>);
 
   @override
-  _i7.Future<void> saveOrderInCategory(_i16.Category? category) =>
+  _i7.Future<void> saveApplicationOrderInCategory(_i16.Category? category) =>
       (super.noSuchMethod(
         Invocation.method(
-          #saveOrderInCategory,
+          #saveApplicationOrderInCategory,
           [category],
         ),
         returnValue: _i7.Future<void>.value(),
@@ -754,16 +838,80 @@ class MockAppsService extends _i1.Mock implements _i14.AppsService {
   @override
   _i7.Future<int> addCategory(
     String? categoryName, {
+    _i16.CategorySort? sort = _i16.CategorySort.manual,
+    _i16.CategoryType? type = _i16.CategoryType.row,
+    int? columnsCount = 6,
+    int? rowHeight = 110,
     bool? shouldNotifyListeners = true,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
           #addCategory,
           [categoryName],
-          {#shouldNotifyListeners: shouldNotifyListeners},
+          {
+            #sort: sort,
+            #type: type,
+            #columnsCount: columnsCount,
+            #rowHeight: rowHeight,
+            #shouldNotifyListeners: shouldNotifyListeners,
+          },
         ),
         returnValue: _i7.Future<int>.value(0),
       ) as _i7.Future<int>);
+
+  @override
+  _i7.Future<void> updateCategory(
+    int? categoryId,
+    String? name,
+    _i16.CategorySort? sort,
+    _i16.CategoryType? type,
+    int? columnsCount,
+    int? rowHeight, {
+    bool? shouldNotifyListeners = true,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateCategory,
+          [
+            categoryId,
+            name,
+            sort,
+            type,
+            columnsCount,
+            rowHeight,
+          ],
+          {#shouldNotifyListeners: shouldNotifyListeners},
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<void> addSpacer(int? height) => (super.noSuchMethod(
+        Invocation.method(
+          #addSpacer,
+          [height],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<void> updateSpacerHeight(
+    _i16.LauncherSpacer? spacer,
+    int? height,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateSpacerHeight,
+          [
+            spacer,
+            height,
+          ],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
 
   @override
   _i7.Future<void> renameCategory(
@@ -783,24 +931,23 @@ class MockAppsService extends _i1.Mock implements _i14.AppsService {
       ) as _i7.Future<void>);
 
   @override
-  _i7.Future<void> deleteCategory(_i16.Category? category) =>
-      (super.noSuchMethod(
+  _i7.Future<void> deleteSection(int? index) => (super.noSuchMethod(
         Invocation.method(
-          #deleteCategory,
-          [category],
+          #deleteSection,
+          [index],
         ),
         returnValue: _i7.Future<void>.value(),
         returnValueForMissingStub: _i7.Future<void>.value(),
       ) as _i7.Future<void>);
 
   @override
-  _i7.Future<void> moveCategory(
+  _i7.Future<void> moveSection(
     int? oldIndex,
     int? newIndex,
   ) =>
       (super.noSuchMethod(
         Invocation.method(
-          #moveCategory,
+          #moveSection,
           [
             oldIndex,
             newIndex,
@@ -921,18 +1068,149 @@ class MockAppsService extends _i1.Mock implements _i14.AppsService {
       );
 
   @override
-  void dispose() => super.noSuchMethod(
+  void notifyListeners() => super.noSuchMethod(
         Invocation.method(
-          #dispose,
+          #notifyListeners,
           [],
         ),
         returnValueForMissingStub: null,
       );
 
   @override
-  void notifyListeners() => super.noSuchMethod(
+  _i7.Future<bool> didPopRoute() => (super.noSuchMethod(
         Invocation.method(
-          #notifyListeners,
+          #didPopRoute,
+          [],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+
+  @override
+  bool handleStartBackGesture(_i9.PredictiveBackEvent? backEvent) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #handleStartBackGesture,
+          [backEvent],
+        ),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  void handleUpdateBackGestureProgress(_i9.PredictiveBackEvent? backEvent) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #handleUpdateBackGestureProgress,
+          [backEvent],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void handleCommitBackGesture() => super.noSuchMethod(
+        Invocation.method(
+          #handleCommitBackGesture,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void handleCancelBackGesture() => super.noSuchMethod(
+        Invocation.method(
+          #handleCancelBackGesture,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i7.Future<bool> didPushRoute(String? route) => (super.noSuchMethod(
+        Invocation.method(
+          #didPushRoute,
+          [route],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+
+  @override
+  _i7.Future<bool> didPushRouteInformation(
+          _i8.RouteInformation? routeInformation) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #didPushRouteInformation,
+          [routeInformation],
+        ),
+        returnValue: _i7.Future<bool>.value(false),
+      ) as _i7.Future<bool>);
+
+  @override
+  void didChangeMetrics() => super.noSuchMethod(
+        Invocation.method(
+          #didChangeMetrics,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void didChangeTextScaleFactor() => super.noSuchMethod(
+        Invocation.method(
+          #didChangeTextScaleFactor,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void didChangePlatformBrightness() => super.noSuchMethod(
+        Invocation.method(
+          #didChangePlatformBrightness,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void didChangeLocales(List<_i13.Locale>? locales) => super.noSuchMethod(
+        Invocation.method(
+          #didChangeLocales,
+          [locales],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void didChangeViewFocus(_i13.ViewFocusEvent? event) => super.noSuchMethod(
+        Invocation.method(
+          #didChangeViewFocus,
+          [event],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i7.Future<_i13.AppExitResponse> didRequestAppExit() => (super.noSuchMethod(
+        Invocation.method(
+          #didRequestAppExit,
+          [],
+        ),
+        returnValue:
+            _i7.Future<_i13.AppExitResponse>.value(_i13.AppExitResponse.exit),
+      ) as _i7.Future<_i13.AppExitResponse>);
+
+  @override
+  void didHaveMemoryPressure() => super.noSuchMethod(
+        Invocation.method(
+          #didHaveMemoryPressure,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void didChangeAccessibilityFeatures() => super.noSuchMethod(
+        Invocation.method(
+          #didChangeAccessibilityFeatures,
           [],
         ),
         returnValueForMissingStub: null,
@@ -1007,6 +1285,21 @@ class MockSettingsService extends _i1.Mock implements _i17.SettingsService {
         returnValue: _i18.dummyValue<String>(
           this,
           Invocation.getter(#timeFormat),
+        ),
+      ) as String);
+
+  @override
+  bool get showRecommendations => (super.noSuchMethod(
+        Invocation.getter(#showRecommendations),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  String get recommendationsFeedUrl => (super.noSuchMethod(
+        Invocation.getter(#recommendationsFeedUrl),
+        returnValue: _i18.dummyValue<String>(
+          this,
+          Invocation.getter(#recommendationsFeedUrl),
         ),
       ) as String);
 
@@ -1126,6 +1419,27 @@ class MockSettingsService extends _i1.Mock implements _i17.SettingsService {
         Invocation.method(
           #setShowTimeInStatusBar,
           [show],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<void> setShowRecommendations(bool? show) => (super.noSuchMethod(
+        Invocation.method(
+          #setShowRecommendations,
+          [show],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
+  _i7.Future<void> setRecommendationsFeedUrl(String? value) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #setRecommendationsFeedUrl,
+          [value],
         ),
         returnValue: _i7.Future<void>.value(),
         returnValueForMissingStub: _i7.Future<void>.value(),
@@ -1610,6 +1924,53 @@ class MockFLauncherDatabase extends _i1.Mock implements _i5.FLauncherDatabase {
       ) as _i7.Future<void>);
 
   @override
+  _i7.Future<int> insertSpacer(_i4.Insertable<_i16.LauncherSpacer>? spacer) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #insertSpacer,
+          [spacer],
+        ),
+        returnValue: _i7.Future<int>.value(0),
+      ) as _i7.Future<int>);
+
+  @override
+  _i7.Future<int> deleteSpacer(int? spacerId) => (super.noSuchMethod(
+        Invocation.method(
+          #deleteSpacer,
+          [spacerId],
+        ),
+        returnValue: _i7.Future<int>.value(0),
+      ) as _i7.Future<int>);
+
+  @override
+  _i7.Future<int> updateSpacer(
+    int? spacerId,
+    _i4.Insertable<_i16.LauncherSpacer>? insertable,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateSpacer,
+          [
+            spacerId,
+            insertable,
+          ],
+        ),
+        returnValue: _i7.Future<int>.value(0),
+      ) as _i7.Future<int>);
+
+  @override
+  _i7.Future<void> updateSpacers(
+          Iterable<_i5.LauncherSpacersCompanion>? values) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateSpacers,
+          [values],
+        ),
+        returnValue: _i7.Future<void>.value(),
+        returnValueForMissingStub: _i7.Future<void>.value(),
+      ) as _i7.Future<void>);
+
+  @override
   _i7.Future<List<_i16.Category>> getCategories() => (super.noSuchMethod(
         Invocation.method(
           #getCategories,
@@ -1617,6 +1978,17 @@ class MockFLauncherDatabase extends _i1.Mock implements _i5.FLauncherDatabase {
         ),
         returnValue: _i7.Future<List<_i16.Category>>.value(<_i16.Category>[]),
       ) as _i7.Future<List<_i16.Category>>);
+
+  @override
+  _i7.Future<List<_i16.LauncherSpacer>> getLauncherSpacers() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getLauncherSpacers,
+          [],
+        ),
+        returnValue: _i7.Future<List<_i16.LauncherSpacer>>.value(
+            <_i16.LauncherSpacer>[]),
+      ) as _i7.Future<List<_i16.LauncherSpacer>>);
 
   @override
   _i7.Future<List<_i5.AppCategory>> getAppsCategories() => (super.noSuchMethod(

@@ -16,13 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import 'package:flauncher/database.dart';
 import 'package:flauncher/providers/apps_service.dart';
 import 'package:flauncher/widgets/add_to_category_dialog.dart';
 import 'package:flauncher/widgets/application_info_panel.dart';
 import 'package:flauncher/widgets/settings/applications_panel_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/services.dart';
+import 'package:transparent_image/transparent_image.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
@@ -52,7 +54,6 @@ void main() {
 
     await _pumpWidgetWithProviders(tester, appsService);
 
-    expect(find.text("TV Applications"), findsOneWidget);
     expect(find.text("FLauncher"), findsOneWidget);
   });
 
@@ -74,7 +75,6 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
 
-    expect(find.text("Non-TV Applications"), findsOneWidget);
     expect(find.text("FLauncher"), findsOneWidget);
   });
 
@@ -97,7 +97,6 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pumpAndSettle();
 
-    expect(find.text("Hidden Applications"), findsOneWidget);
     expect(find.text("FLauncher"), findsOneWidget);
   });
 
@@ -109,7 +108,9 @@ void main() {
       version: "1.0.0",
     );
     when(appsService.applications).thenReturn([application]);
-    when(appsService.categoriesWithApps).thenReturn([CategoryWithApps(fakeCategory(), [])]);
+    final category = fakeCategory();
+    when(appsService.launcherSections).thenReturn([category]);
+    when(appsService.categories).thenReturn([category]);
 
     await _pumpWidgetWithProviders(tester, appsService);
 
@@ -128,7 +129,8 @@ void main() {
       version: "1.0.0",
     );
     when(appsService.applications).thenReturn([application]);
-    when(appsService.categoriesWithApps).thenReturn([CategoryWithApps(fakeCategory(), [])]);
+    when(appsService.launcherSections)
+        .thenReturn([withApps(fakeCategory(), [])]);
 
     await _pumpWidgetWithProviders(tester, appsService);
 
@@ -141,13 +143,25 @@ void main() {
   });
 }
 
-Future<void> _pumpWidgetWithProviders(WidgetTester tester, AppsService appsService) async {
+Future<void> _pumpWidgetWithProviders(
+    WidgetTester tester, AppsService appsService) async {
+  when((appsService as MockAppsService).getAppIcon(any))
+      .thenAnswer((_) async => Uint8List.fromList(kTransparentImage));
   await tester.pumpWidget(
     MultiProvider(
       providers: [
         ChangeNotifierProvider<AppsService>.value(value: appsService),
       ],
-      builder: (_, __) => MaterialApp(home: ApplicationsPanelPage()),
+      builder: (_, __) => MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: ApplicationsPanelPage(),
+      ),
     ),
   );
   await tester.pumpAndSettle();

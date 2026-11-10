@@ -1,0 +1,8 @@
+include: ../analysis_options.yaml
+
+analyzer:
+  errors:
+    # Widget tests still size the surface with the pre-3.10 window setters,
+    # and the method-channel tests use the matching mock handler. Those APIs
+    # are deprecated but behaviour-identical on Flutter 3.24.
+    deprecated_member_use: ignore

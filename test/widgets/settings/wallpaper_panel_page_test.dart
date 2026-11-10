@@ -21,6 +21,8 @@ import 'package:flauncher/providers/wallpaper_service.dart';
 import 'package:flauncher/widgets/settings/gradient_panel_page.dart';
 import 'package:flauncher/widgets/settings/wallpaper_panel_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -57,25 +59,28 @@ void main() {
       await _pumpWidgetWithProviders(tester, settingsService, wallpaperService);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
-      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pumpAndSettle();
       verify(wallpaperService.pickWallpaper());
     });
 
-    testWidgets("shows snack bar if not file explorer available", (tester) async {
+    testWidgets("shows snack bar if not file explorer available",
+        (tester) async {
       final settingsService = MockSettingsService();
       final wallpaperService = MockWallpaperService();
-      when(wallpaperService.pickWallpaper()).thenThrow(NoFileExplorerException());
+      when(wallpaperService.pickWallpaper())
+          .thenThrow(NoFileExplorerException());
 
       await _pumpWidgetWithProviders(tester, settingsService, wallpaperService);
 
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
-      await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pumpAndSettle();
       expect(find.byType(SnackBar), findsOneWidget);
-      expect(find.text("Please install a file explorer in order to pick an image."), findsOneWidget);
+      expect(
+          find.text(
+              "Please install a file explorer in order to pick a picture."),
+          findsOneWidget);
     });
   });
 }
@@ -92,8 +97,16 @@ Future<void> _pumpWidgetWithProviders(
         ChangeNotifierProvider<WallpaperService>.value(value: wallpaperService),
       ],
       builder: (_, __) => MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
         routes: {
-          GradientPanelPage.routeName: (_) => Container(key: Key("GradientPanelPage")),
+          GradientPanelPage.routeName: (_) =>
+              Container(key: Key("GradientPanelPage")),
         },
         home: Scaffold(body: WallpaperPanelPage()),
       ),
