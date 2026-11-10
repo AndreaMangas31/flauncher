@@ -61,7 +61,10 @@ class _RecommendationsRowState extends State<RecommendationsRow> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SectionHeading(localizations.recommendationsRow),
+                  SectionHeading(
+                    localizations.recommendationsRow,
+                    mark: const ToriiMark(),
+                  ),
                   Expanded(
                     child: LayoutBuilder(
                       builder: (context, posterConstraints) {
@@ -125,6 +128,7 @@ class _DetailStrip extends StatelessWidget {
       decoration: BoxDecoration(
         color: EmeraldShrine.surface.withOpacity(0.78),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: EmeraldShrine.accent, width: 1.5),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -139,7 +143,12 @@ class _DetailStrip extends StatelessWidget {
               style: EmeraldShrine.posterTitle(fontSize: 20),
             ),
           ),
-          const SizedBox(width: 24),
+          Container(
+            width: 1,
+            height: 28,
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            color: EmeraldShrine.accent.withOpacity(0.85),
+          ),
           Expanded(
             child: Text(
               item.description,
@@ -208,12 +217,13 @@ class _RecommendationPosterState extends State<_RecommendationPoster> {
               },
               onTap: () => context.read<RecommendationsService>().open(item),
               child: DecoratedBox(
+                key: _focused ? const Key('emerald-focus-border') : null,
                 decoration: BoxDecoration(
                   borderRadius:
                       BorderRadius.circular(EmeraldShrine.posterRadius),
                   border: Border.all(
                     color: _focused ? EmeraldShrine.accent : Colors.transparent,
-                    width: 2,
+                    width: 2.5,
                   ),
                 ),
                 child: Stack(
@@ -227,10 +237,10 @@ class _RecommendationPosterState extends State<_RecommendationPoster> {
                           end: Alignment.bottomCenter,
                           colors: [
                             Color(0x000E1111),
-                            Color(0x000E1111),
+                            Color(0x660E1111),
                             Color(0xF20E1111)
                           ],
-                          stops: [0.0, 0.45, 1.0],
+                          stops: [0.42, 0.72, 1.0],
                         ),
                       ),
                     ),
@@ -246,7 +256,11 @@ class _RecommendationPosterState extends State<_RecommendationPoster> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.center,
-                            style: EmeraldShrine.posterTitle(fontSize: 15),
+                            style: EmeraldShrine.posterTitle(fontSize: 15).copyWith(
+                              shadows: const [
+                                Shadow(color: Color(0xCC000000), blurRadius: 6),
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 6),
                           _PlatformChip(platform: item.platform),
@@ -314,22 +328,76 @@ class _PlatformChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color color = recommendationPlatformColor(platform);
-    final bool darkChip = color.computeLuminance() < 0.2;
+    final String? icon = platformIconAsset(platform);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: EdgeInsets.fromLTRB(icon == null ? 8 : 3, 2, 8, 2),
       decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(8),
-        border:
-            darkChip ? Border.all(color: Colors.white.withOpacity(0.28)) : null,
+        color: const Color(0xCC0E1111),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.32)),
       ),
-      child: Text(
-        platform,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: EmeraldShrine.body(fontSize: 11, color: Colors.white),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Image.asset(
+              icon,
+              width: 14,
+              height: 14,
+              cacheWidth: 32,
+              cacheHeight: 32,
+              filterQuality: FilterQuality.medium,
+              errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+            ),
+            const SizedBox(width: 4),
+          ],
+          Flexible(
+            child: Text(
+              platform,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: EmeraldShrine.body(fontSize: 11, color: Colors.white),
+            ),
+          ),
+        ],
       ),
     );
   }
+}
+
+/// Small shrine gate drawn next to the recommendations heading.
+class ToriiMark extends StatelessWidget {
+  const ToriiMark({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const CustomPaint(
+      size: Size(16, 14),
+      painter: _ToriiPainter(),
+    );
+  }
+}
+
+class _ToriiPainter extends CustomPainter {
+  const _ToriiPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()..color = const Color(0xFFE25B4A);
+    final double w = size.width;
+    final double h = size.height;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, 0, w, h * 0.22),
+        const Radius.circular(1),
+      ),
+      paint,
+    );
+    canvas.drawRect(Rect.fromLTWH(w * 0.08, h * 0.34, w * 0.84, h * 0.14), paint);
+    canvas.drawRect(Rect.fromLTWH(w * 0.18, h * 0.28, w * 0.12, h * 0.72), paint);
+    canvas.drawRect(Rect.fromLTWH(w * 0.70, h * 0.28, w * 0.12, h * 0.72), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -147,6 +147,16 @@ void main() {
         greaterThanOrEqualTo(7));
   });
 
+  test("platform badges name an icon, and unknown platforms stay text-only", () {
+    expect(platformIconAsset("Netflix"), "assets/platforms/netflix.png");
+    expect(platformIconAsset("Disney+"), endsWith("disney_plus.png"));
+    expect(platformIconAsset("Crunchyroll"), endsWith("crunchyroll.png"));
+    expect(platformIconAsset("Prime Video"), endsWith("prime_video.png"));
+    expect(platformIconAsset("HBO Max"), endsWith("hbo_max.png"));
+    expect(platformIconAsset("Filmin"), endsWith("filmin.png"));
+    expect(platformIconAsset("Something else"), isNull);
+  });
+
   test("platform chips use the brief's colours", () {
     expect(recommendationPlatformColor("Netflix"), const Color(0xFFE50914));
     expect(recommendationPlatformColor("Disney+"), const Color(0xFF113CCF));

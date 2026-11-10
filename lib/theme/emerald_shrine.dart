@@ -162,3 +162,27 @@ Color recommendationPlatformColor(String platform) {
       return EmeraldShrine.surface;
   }
 }
+
+/// Tiny bundled mark for a platform badge. Null when we have no icon, so the
+/// pill stays text-only. These are identifying badges, not modified logos.
+String? platformIconAsset(String platform) {
+  switch (platform.toLowerCase().trim()) {
+    case 'netflix':
+      return 'assets/platforms/netflix.png';
+    case 'disney+':
+    case 'disney plus':
+      return 'assets/platforms/disney_plus.png';
+    case 'crunchyroll':
+      return 'assets/platforms/crunchyroll.png';
+    case 'prime video':
+    case 'prime':
+      return 'assets/platforms/prime_video.png';
+    case 'hbo max':
+    case 'max':
+      return 'assets/platforms/hbo_max.png';
+    case 'filmin':
+      return 'assets/platforms/filmin.png';
+    default:
+      return null;
+  }
+}

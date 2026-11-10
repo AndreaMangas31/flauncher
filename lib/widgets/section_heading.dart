@@ -21,8 +21,9 @@ import 'package:flutter/material.dart';
 
 class SectionHeading extends StatelessWidget {
   final String text;
+  final Widget? mark;
 
-  const SectionHeading(this.text, {super.key});
+  const SectionHeading(this.text, {super.key, this.mark});
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +39,10 @@ class SectionHeading extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
+          if (mark != null) ...[
+            const SizedBox(width: 8),
+            mark!,
+          ],
           const SizedBox(width: 10),
           Flexible(
             child: Text(
