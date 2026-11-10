@@ -112,6 +112,29 @@ void main() {
 
     await database.close();
   });
+
+  test("usage stats reorder only the apps after the pinned favourites", () async {
+    final List<Map<String, Object?>> installed = [
+      _app("com.other.zebra", "Zebra"),
+      _app(netflixPackage, "Netflix"),
+      _app("com.other.alpha", "Alpha"),
+    ];
+    final database = FLauncherDatabase(DatabaseConnection(NativeDatabase.memory()));
+    final service = await _start(database, installed, usage: {
+      "com.other.zebra": 100,
+      "com.other.alpha": 1,
+      netflixPackage: 9999,
+    });
+
+    final Category apps = service.launcherSections.whereType<Category>().first;
+    expect(apps.applications.map((app) => app.packageName).toList(), [
+      netflixPackage,
+      "com.other.zebra",
+      "com.other.alpha",
+    ]);
+
+    await database.close();
+  });
 }
 
 Map<String, Object?> _app(String packageName, String name, {bool liveTv = false}) => {
@@ -123,7 +146,7 @@ Map<String, Object?> _app(String packageName, String name, {bool liveTv = false}
       if (liveTv) "action": liveTvAction,
     };
 
-void _stubChannel(List<Map<String, Object?>> applications) {
+void _stubChannel(List<Map<String, Object?>> applications, {Map<String, int>? usage}) {
   const MethodChannel methodChannel = MethodChannel("me.efesser.flauncher/method");
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(methodChannel,
       (call) async {
@@ -132,6 +155,8 @@ void _stubChannel(List<Map<String, Object?>> applications) {
         return applications;
       case "applicationExists":
         return false;
+      case "getUsageStats":
+        return usage;
       default:
         return null;
     }
@@ -144,8 +169,12 @@ void _stubChannel(List<Map<String, Object?>> applications) {
   });
 }
 
-Future<AppsService> _start(FLauncherDatabase database, List<Map<String, Object?>> applications) async {
-  _stubChannel(applications);
+Future<AppsService> _start(
+  FLauncherDatabase database,
+  List<Map<String, Object?>> applications, {
+  Map<String, int>? usage,
+}) async {
+  _stubChannel(applications, usage: usage);
   final service = AppsService(FLauncherChannel(), database);
   await _waitUntil(() => service.initialized);
   return service;

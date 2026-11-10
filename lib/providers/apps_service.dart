@@ -26,12 +26,13 @@ import 'package:flauncher/database.dart';
 import 'package:flauncher/default_layout.dart';
 import 'package:flauncher/flauncher_channel.dart';
 import 'package:flutter/foundation.dart' hide Category;
+import 'package:flutter/widgets.dart';
 import 'package:tuple/tuple.dart';
 
 import '../models/app.dart';
 import '../models/category.dart';
 
-class AppsService extends ChangeNotifier {
+class AppsService extends ChangeNotifier with WidgetsBindingObserver {
   final FLauncherChannel _fLauncherChannel;
   final FLauncherDatabase _database;
 
@@ -51,7 +52,21 @@ class AppsService extends ChangeNotifier {
       _categoriesById.values.map((category) => category.unmodifiable()).toList(growable: false);
 
   AppsService(this._fLauncherChannel, this._database) {
+    WidgetsBinding.instance.addObserver(this);
     _init();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _initialized) {
+      refreshUsageStats();
+    }
   }
 
   Future<void> _init() async {
@@ -60,6 +75,7 @@ class AppsService extends ChangeNotifier {
       await _initDefaultCategories();
     }
     await _ensureLiveTvPlacement();
+    await refreshUsageStats(shouldNotifyListeners: false);
 
     _fLauncherChannel.addAppsChangedListener((event) async {
       switch (event["action"]) {
@@ -331,6 +347,34 @@ class AppsService extends ChangeNotifier {
 
     for (Category category in _categoriesById.values) {
       sortCategory(category);
+    }
+
+    if (shouldNotifyListeners) {
+      notifyListeners();
+    }
+  }
+
+  /// Reloads last-used times and re-applies the pinned order. Safe when the
+  /// usage permission has not been granted.
+  Future<void> refreshUsageStats({bool shouldNotifyListeners = true}) async {
+    Map<String, int>? usage;
+    try {
+      usage = await _fLauncherChannel.getUsageStats();
+    } catch (_) {
+      usage = null;
+    }
+
+    _usageStatsAvailable = usage != null;
+    if (usage != null) {
+      for (final App application in _applications.values) {
+        application.lastTimeUsed = usage[application.packageName] ?? 0;
+      }
+    }
+
+    for (final Category category in _categoriesById.values) {
+      if (category.sort == CategorySort.pinnedAndRecent) {
+        sortCategory(category);
+      }
     }
 
     if (shouldNotifyListeners) {
