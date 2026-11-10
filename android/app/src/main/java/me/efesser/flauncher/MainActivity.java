@@ -21,6 +21,7 @@ package me.efesser.flauncher;
 import android.app.AppOpsManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
+import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.*;
@@ -59,6 +60,7 @@ import java.util.concurrent.Future;
 public class MainActivity extends FlutterActivity
 {
     private final String METHOD_CHANNEL = "me.efesser.flauncher/method";
+    private MethodChannel methodChannel;
     private final String APPS_EVENT_CHANNEL = "me.efesser.flauncher/event_apps";
     private final String NETWORK_EVENT_CHANNEL = "me.efesser.flauncher/event_network";
 
@@ -69,7 +71,8 @@ public class MainActivity extends FlutterActivity
 
         BinaryMessenger messenger = flutterEngine.getDartExecutor().getBinaryMessenger();
 
-        new MethodChannel(messenger, METHOD_CHANNEL).setMethodCallHandler((call, result) -> {
+        methodChannel = new MethodChannel(messenger, METHOD_CHANNEL);
+        methodChannel.setMethodCallHandler((call, result) -> {
             switch (call.method)
             {
                 case "getApplications" -> result.success(getApplications());
@@ -97,6 +100,18 @@ public class MainActivity extends FlutterActivity
 
         new EventChannel(messenger, NETWORK_EVENT_CHANNEL).setStreamHandler(
                 new NetworkEventStreamHandler(this));
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        if (methodChannel == null) {
+            return;
+        }
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW
+                || level == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+            methodChannel.invokeMethod("trimMemory", level);
+        }
     }
 
     private List<Map<String, Serializable>> getApplications() {

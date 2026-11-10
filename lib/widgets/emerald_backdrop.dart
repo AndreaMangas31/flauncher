@@ -18,6 +18,7 @@
 
 import 'dart:async';
 
+import 'package:flauncher/image_budget.dart';
 import 'package:flauncher/theme/emerald_shrine.dart';
 import 'package:flauncher/theme/shrine_lighting.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +47,8 @@ class EmeraldBackdrop extends StatefulWidget {
   State<EmeraldBackdrop> createState() => _EmeraldBackdropState();
 }
 
-class _EmeraldBackdropState extends State<EmeraldBackdrop> {
+class _EmeraldBackdropState extends State<EmeraldBackdrop>
+    with WidgetsBindingObserver {
   late ShrineLighting _lighting;
   String _asset = shrineDayAsset;
   Timer? _timer;
@@ -58,12 +60,34 @@ class _EmeraldBackdropState extends State<EmeraldBackdrop> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _lighting = ShrineLighting.at(_now());
     if (_themed) {
       _resolveAsset();
-      if (widget.poll) {
-        _timer = Timer.periodic(widget.pollInterval, (_) => _onTick());
-      }
+      _startPolling();
+    }
+  }
+
+  void _startPolling() {
+    if (!widget.poll || _timer != null) {
+      return;
+    }
+    _timer = Timer.periodic(widget.pollInterval, (_) => _onTick());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // A dream has its own engine. Drop the plate and the poll while this
+    // isolate is paused so the 1080p bitmap is not decoded twice.
+    if (state == AppLifecycleState.paused) {
+      _timer?.cancel();
+      _timer = null;
+      clearLauncherImageCache();
+      return;
+    }
+    if (state == AppLifecycleState.resumed && _themed) {
+      _startPolling();
+      _onTick();
     }
   }
 
@@ -80,13 +104,12 @@ class _EmeraldBackdropState extends State<EmeraldBackdrop> {
       _lighting = next;
       _resolveAsset();
     }
-    if (_timer == null && widget.poll) {
-      _timer = Timer.periodic(widget.pollInterval, (_) => _onTick());
-    }
+    _startPolling();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     super.dispose();
   }
@@ -114,9 +137,9 @@ class _EmeraldBackdropState extends State<EmeraldBackdrop> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.sizeOf(context);
-    final int cacheWidth = (size.width * MediaQuery.devicePixelRatioOf(context))
-        .round()
-        .clamp(1, 1920);
+    final double ratio = MediaQuery.devicePixelRatioOf(context);
+    final int cacheWidth = (size.width * ratio).round().clamp(1, 1920);
+    final int cacheHeight = (size.height * ratio).round().clamp(1, 1080);
 
     return RepaintBoundary(
       child: SizedBox(
@@ -126,31 +149,35 @@ class _EmeraldBackdropState extends State<EmeraldBackdrop> {
           fit: StackFit.expand,
           children: [
             if (_themed)
-              AnimatedSwitcher(
-                duration: shrineLightingFade,
-                switchInCurve: Curves.easeOut,
-                switchOutCurve: Curves.easeIn,
-                child: Image.asset(
-                  _asset,
-                  key: ValueKey<String>(_asset),
-                  fit: BoxFit.cover,
-                  width: size.width,
-                  height: size.height,
-                  cacheWidth: cacheWidth,
-                  gaplessPlayback: true,
-                  filterQuality: FilterQuality.medium,
-                  errorBuilder: (_, __, ___) =>
-                      const ColoredBox(color: EmeraldShrine.background),
+              Image(
+                key: ValueKey<String>(_asset),
+                image: ResizeImage(
+                  AssetImage(_asset),
+                  width: cacheWidth,
+                  height: cacheHeight,
+                  policy: ResizeImagePolicy.fit,
                 ),
+                fit: BoxFit.cover,
+                width: size.width,
+                height: size.height,
+                gaplessPlayback: false,
+                filterQuality: FilterQuality.low,
+                errorBuilder: (_, __, ___) =>
+                    const ColoredBox(color: EmeraldShrine.background),
               )
             else
               Image(
                 key: const Key('background'),
-                image: widget.userWallpaper!,
+                image: ResizeImage.resizeIfNeeded(
+                  cacheWidth,
+                  cacheHeight,
+                  widget.userWallpaper!,
+                ),
                 fit: BoxFit.cover,
                 width: size.width,
                 height: size.height,
-                gaplessPlayback: true,
+                gaplessPlayback: false,
+                filterQuality: FilterQuality.low,
               ),
             if (_themed) ShrineTintVeil(tint: _lighting.tint),
             const _LegibilityScrim(),

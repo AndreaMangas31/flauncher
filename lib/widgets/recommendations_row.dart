@@ -264,18 +264,27 @@ class _RecommendationPosterState extends State<_RecommendationPoster> {
   }
 
   Widget _poster(Recommendation item) {
-    return Image.network(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double ratio = MediaQuery.devicePixelRatioOf(context);
+        final int cacheWidth = (constraints.maxWidth * ratio).round().clamp(1, 480);
+        final int cacheHeight =
+            (constraints.maxHeight * ratio).round().clamp(1, 720);
+        return Image.network(
       item.imageUrl,
       fit: BoxFit.cover,
-      cacheWidth: 360,
-      gaplessPlayback: true,
-      filterQuality: FilterQuality.medium,
+      cacheWidth: cacheWidth,
+      cacheHeight: cacheHeight,
+      gaplessPlayback: false,
+      filterQuality: FilterQuality.low,
       errorBuilder: (_, __, ___) => _placeholder(item),
       frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
         if (wasSynchronouslyLoaded || frame != null) {
           return child;
         }
         return const ColoredBox(color: EmeraldShrine.surface);
+      },
+    );
       },
     );
   }

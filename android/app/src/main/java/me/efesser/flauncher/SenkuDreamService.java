@@ -51,7 +51,6 @@ public class SenkuDreamService extends DreamService {
 
     @Nullable private FlutterEngine flutterEngine;
     @Nullable private FlutterView flutterView;
-    private boolean tornDown;
 
     @Override
     public void onAttachedToWindow() {
@@ -59,7 +58,38 @@ public class SenkuDreamService extends DreamService {
         setInteractive(false);
         setFullscreen(true);
         setScreenBright(false);
+        // The engine is not created here. A paused television should not
+        // pay for a second Flutter heap until the dream is actually showing.
+    }
 
+    @Override
+    public void onDreamingStarted() {
+        super.onDreamingStarted();
+        startEngine();
+    }
+
+    @Override
+    public void onDreamingStopped() {
+        tearDown();
+        super.onDreamingStopped();
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        tearDown();
+        super.onDetachedFromWindow();
+    }
+
+    @Override
+    public void onDestroy() {
+        tearDown();
+        super.onDestroy();
+    }
+
+    private void startEngine() {
+        if (flutterEngine != null) {
+            return;
+        }
         try {
             flutterEngine = new FlutterEngine(this);
             GeneratedPluginRegistrant.registerWith(flutterEngine);
@@ -76,6 +106,7 @@ public class SenkuDreamService extends DreamService {
             flutterView.setFocusable(false);
             flutterView.setFocusableInTouchMode(false);
             setContentView(flutterView);
+            flutterEngine.getLifecycleChannel().appIsResumed();
         } catch (Throwable error) {
             Log.e(TAG, "Could not start the shrine dream", error);
             tearDown();
@@ -83,39 +114,7 @@ public class SenkuDreamService extends DreamService {
         }
     }
 
-    @Override
-    public void onDreamingStarted() {
-        super.onDreamingStarted();
-        if (flutterEngine != null) {
-            flutterEngine.getLifecycleChannel().appIsResumed();
-        }
-    }
-
-    @Override
-    public void onDreamingStopped() {
-        if (flutterEngine != null) {
-            flutterEngine.getLifecycleChannel().appIsPaused();
-        }
-        super.onDreamingStopped();
-    }
-
-    @Override
-    public void onDetachedFromWindow() {
-        tearDown();
-        super.onDetachedFromWindow();
-    }
-
-    @Override
-    public void onDestroy() {
-        tearDown();
-        super.onDestroy();
-    }
-
     private void tearDown() {
-        if (tornDown) {
-            return;
-        }
-        tornDown = true;
         if (flutterView != null) {
             flutterView.detachFromFlutterEngine();
             flutterView = null;

@@ -178,7 +178,10 @@ void main() {
 
     final Image plate =
         tester.widget<Image>(find.byKey(const Key("background")));
-    expect(plate.image, same(photo));
+    final ImageProvider provider = plate.image is ResizeImage
+        ? (plate.image as ResizeImage).imageProvider
+        : plate.image;
+    expect(provider, same(photo));
     expect(find.byType(ShrineTintVeil), findsNothing);
   });
 
@@ -199,6 +202,32 @@ void main() {
     expect(tester.widget<ShrineTintVeil>(find.byType(ShrineTintVeil)).tint,
         ShrineLighting.nightTint);
     await tester.pump(shrineLightingFade);
+  });
+
+  testWidgets("the lighting poll stops while the launcher is paused",
+      (tester) async {
+    DateTime now = DateTime(2026, 11, 10, 9);
+    await tester.pumpWidget(MaterialApp(
+      home: EmeraldBackdrop(
+        poll: true,
+        pollInterval: const Duration(seconds: 1),
+        clock: () => now,
+      ),
+    ));
+    await tester.pump();
+    expect(tester.widget<ShrineTintVeil>(find.byType(ShrineTintVeil)).tint,
+        ShrineLighting.morningTint);
+
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    now = DateTime(2026, 11, 10, 22);
+    await tester.pump(const Duration(seconds: 2));
+    expect(tester.widget<ShrineTintVeil>(find.byType(ShrineTintVeil)).tint,
+        ShrineLighting.morningTint);
+
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump(const Duration(seconds: 1));
+    expect(tester.widget<ShrineTintVeil>(find.byType(ShrineTintVeil)).tint,
+        ShrineLighting.nightTint);
   });
 
   testWidgets("Ajustes opens settings and the date is Spanish", (tester) async {

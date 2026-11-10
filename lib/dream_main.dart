@@ -17,6 +17,7 @@
  */
 
 import 'package:flauncher/dream_feed.dart';
+import 'package:flauncher/image_budget.dart';
 import 'package:flauncher/models/recommendation.dart';
 import 'package:flauncher/providers/recommendations_service.dart';
 import 'package:flauncher/theme/emerald_shrine.dart';
@@ -29,6 +30,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 @pragma('vm:entry-point')
 void dreamMain() {
   WidgetsFlutterBinding.ensureInitialized();
+  installImageCacheBudget();
   runApp(const SenkuDreamApp());
 }
 

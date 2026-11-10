@@ -322,8 +322,9 @@ class _Poster extends StatelessWidget {
       child: Image.network(
         item.imageUrl,
         fit: BoxFit.cover,
-        cacheWidth: 420,
-        gaplessPlayback: true,
+        cacheWidth: 336,
+        cacheHeight: 504,
+        gaplessPlayback: false,
         filterQuality: FilterQuality.low,
         errorBuilder: (_, __, ___) =>
             const ColoredBox(color: EmeraldShrine.surface),
