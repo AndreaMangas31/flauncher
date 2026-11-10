@@ -126,6 +126,15 @@ void main() {
       netflixPackage: 9999,
     });
 
+    await _waitUntil(() {
+      final List<String> names = service.launcherSections
+          .whereType<Category>()
+          .first
+          .applications
+          .map((app) => app.packageName)
+          .toList();
+      return names.length == 3 && names[1] == "com.other.zebra";
+    });
     final Category apps = service.launcherSections.whereType<Category>().first;
     expect(apps.applications.map((app) => app.packageName).toList(), [
       netflixPackage,

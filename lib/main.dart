@@ -35,11 +35,13 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'flauncher_app.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final WidgetsBinding binding = WidgetsFlutterBinding.ensureInitialized();
   installImageCacheBudget();
   listenForTrimMemory();
-  initializeDateFormatting();
 
+  // Preferences are the only read the first frame needs. The database
+  // connection is lazy, and the big date-symbol table is parsed after
+  // the shell is up. The clock falls back to H:mm until that finishes.
   final sharedPreferences = await SharedPreferences.getInstance();
   final fLauncherChannel = FLauncherChannel();
   final fLauncherDatabase = FLauncherDatabase(connect());
@@ -60,4 +62,8 @@ Future<void> main() async {
               fLauncherChannel,
             )),
   ], child: FLauncherApp()));
+
+  binding.addPostFrameCallback((_) {
+    initializeDateFormatting();
+  });
 }

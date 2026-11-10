@@ -24,6 +24,7 @@ import 'package:flauncher/flauncher_channel.dart';
 import 'package:flauncher/models/recommendation.dart';
 import 'package:flauncher/providers/settings_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 typedef RecommendationFetcher = Future<String?> Function(Uri uri);
@@ -56,7 +57,11 @@ class RecommendationsService extends ChangeNotifier {
         refresh();
       });
     }
-    refresh();
+    // The cached feed is already on screen. The network refresh waits until
+    // the first frame so it does not compete with the app list.
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      refresh();
+    });
   }
 
   bool get enabled => _settings.showRecommendations;

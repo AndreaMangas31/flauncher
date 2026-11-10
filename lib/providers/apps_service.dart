@@ -75,7 +75,6 @@ class AppsService extends ChangeNotifier with WidgetsBindingObserver {
       await _initDefaultCategories();
     }
     await _ensureLiveTvPlacement();
-    await refreshUsageStats(shouldNotifyListeners: false);
 
     _fLauncherChannel.addAppsChangedListener((event) async {
       switch (event["action"]) {
@@ -125,6 +124,9 @@ class AppsService extends ChangeNotifier with WidgetsBindingObserver {
 
     _initialized = true;
     notifyListeners();
+    // Usage stats reorder the tail. They can arrive after the first frame
+    // so the package scan is not stuck behind the system usage service.
+    unawaited(refreshUsageStats());
   }
 
   AppsCompanion _buildAppCompanion(dynamic data) {
