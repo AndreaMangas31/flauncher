@@ -4,7 +4,9 @@
 FLauncher is an open-source alternative launcher for Android TV, built with [Flutter](https://flutter.dev).
 
 ## Download
-Get the latest build from the [releases](https://github.com/osrosal/flauncher/releases) page, you can look for older builds on the [actions](https://github.com/CocoCR300/flauncher/actions) tab, where they are uploaded as artifacts.
+Each push and pull request builds `flauncher-armeabi-v7a-release.apk` and uploads it as a [GitHub Actions](https://github.com/AndreaMangas31/flauncher/actions) artifact. A tag `v*` also attaches that APK to a [GitHub Release](https://github.com/AndreaMangas31/flauncher/releases).
+
+If the fork has no release keystore secrets, the APK is signed with the Android debug key so it can be installed with `adb install`. That signature does not match an install of the upstream release (`me.efesser.flauncher` signed by osrosal). Uninstall the previous app first (`adb uninstall me.efesser.flauncher`), then install this APK.
 
 ## Features
 For a list of the changes introduced by this fork from the original, see the [CHANGELOG](CHANGELOG.md) file.
@@ -26,6 +28,45 @@ For a list of the changes introduced by this fork from the original, see the [CH
 |  |  |  |
 |--|--|--|
 | ![](screenshots/Screenshot_1624378896.png) | ![](screenshots/Screenshot_1624378921.png) | ![](screenshots/Screenshot_1624378938.png) |
+
+## Recomendadas por Senku
+
+La fila del final de la pantalla de inicio no es una categoría de aplicaciones. FLauncher descarga un feed JSON, guarda la última copia válida y la vuelve a pedir al abrir el launcher y cada 6 horas. Si no hay red o el JSON no es válido, se muestra la copia guardada; si tampoco hay copia, la fila se oculta. Un fallo del feed no cierra el launcher.
+
+La URL por defecto es `https://raw.githubusercontent.com/AndreaMangas31/flauncher/main/recommendations/recommendations.json`. Se cambia en Ajustes, junto con el interruptor que muestra u oculta la fila. El ejemplo versionado está en [`recommendations/recommendations.json`](recommendations/recommendations.json).
+
+```json
+{
+  "updatedAt": "2026-11-10T00:00:00Z",
+  "items": [
+    {
+      "title": "Ejemplo: serie de placeholder",
+      "description": "Texto corto en español.",
+      "platform": "Netflix",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://example.com/poster.png",
+      "deepLink": "https://www.netflix.com/title/80057281",
+      "packageName": "com.netflix.ninja"
+    }
+  ]
+}
+```
+
+| Campo | Obligatorio | Notas |
+| --- | --- | --- |
+| `updatedAt` | sí | Fecha ISO-8601 del feed. Si falta o no se puede leer, el feed se descarta. |
+| `items` | sí | Lista. Una entrada incompleta se omite; el resto se muestra. |
+| `title` | sí | Título de la ficha. |
+| `description` | sí | Texto corto en español. Se ve al enfocar la ficha con el mando. |
+| `platform` | sí | Por ejemplo Netflix, Crunchyroll, Disney+, Prime Video, HBO Max o Filmin. |
+| `type` | sí | `serie` o `película`. |
+| `status` | sí | `en emisión` o `estreno`. |
+| `imageUrl` | sí | URL del póster. Si la imagen falla, la ficha sigue visible. |
+| `deepLink` | no | Se abre con `ACTION_VIEW` si alguna actividad lo resuelve. |
+| `packageName` | no | Si el enlace no resuelve, se abre esta aplicación. Paquetes habituales en Android TV: `com.netflix.ninja`, `com.crunchyroll.crunchyroid`, `com.disney.disneyplus`, `com.amazon.amazonvideo.livingroom`, `com.wbd.stream`, `com.filmin.filminapp`. |
+
+Seleccionar la ficha intenta el `deepLink` y, si el sistema no lo resuelve, lanza `packageName`.
 
 ## Set FLauncher as default launcher
 

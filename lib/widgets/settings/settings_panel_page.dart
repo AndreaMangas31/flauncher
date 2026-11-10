@@ -33,6 +33,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../rounded_switch_list_tile.dart';
 import 'back_button_actions.dart';
+import 'recommendations_settings.dart';
 
 class SettingsPanelPage extends StatelessWidget {
   static const String routeName = "settings_panel";
@@ -42,110 +43,108 @@ class SettingsPanelPage extends StatelessWidget {
     AppLocalizations localizations = AppLocalizations.of(context)!;
 
     return Consumer<SettingsService>(
-      builder: (context, settingsService, __) => Column(
-        children: [
-          Text(localizations.settings, style: Theme.of(context).textTheme.titleLarge),
-          const Divider(),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  EnsureVisible(
-                    alignment: 0.5,
-                    child: TextButton(
-                      autofocus: true,
-                      child: Row(
-                        children: [
-                          const Icon(Icons.apps),
-                          Container(width: 8),
-                          Text(localizations.applications, style: Theme.of(context).textTheme.bodyMedium),
-                        ],
-                      ),
-                      onPressed: () => Navigator.of(context).pushNamed(ApplicationsPanelPage.routeName),
-                    ),
-                  ),
-                  TextButton(
+        builder: (context, settingsService, __) => Column(children: [
+              Text(localizations.settings, style: Theme.of(context).textTheme.titleLarge),
+              const Divider(),
+              Expanded(
+                  child: SingleChildScrollView(
+                      child: Column(children: [
+                EnsureVisible(
+                  alignment: 0.5,
+                  child: TextButton(
+                    autofocus: true,
                     child: Row(
                       children: [
-                        const Icon(Icons.category),
+                        const Icon(Icons.apps),
                         Container(width: 8),
-                        Text(localizations.launcherSections, style: Theme.of(context).textTheme.bodyMedium),
+                        Text(localizations.applications, style: Theme.of(context).textTheme.bodyMedium),
                       ],
                     ),
-                    onPressed: () => Navigator.of(context).pushNamed(LauncherSectionsPanelPage.routeName),
+                    onPressed: () => Navigator.of(context).pushNamed(ApplicationsPanelPage.routeName),
                   ),
-                  TextButton(
-                    child: Row(
-                      children: [
-                        const Icon(Icons.wallpaper_outlined),
-                        Container(width: 8),
-                        Text(localizations.wallpaper, style: Theme.of(context).textTheme.bodyMedium),
-                      ],
-                    ),
-                    onPressed: () => Navigator.of(context).pushNamed(WallpaperPanelPage.routeName),
+                ),
+                TextButton(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.category),
+                      Container(width: 8),
+                      Text(localizations.launcherSections, style: Theme.of(context).textTheme.bodyMedium),
+                    ],
                   ),
-                  TextButton(
-                    child: Row(
-                      children: [
-                        const Icon(Icons.tips_and_updates),
-                        Container(width: 8),
-                        Text(localizations.statusBar, style: Theme.of(context).textTheme.bodyMedium),
-                      ],
-                    ),
-                    onPressed: () => Navigator.of(context).pushNamed(StatusBarPanelPage.routeName),
+                  onPressed: () => Navigator.of(context).pushNamed(LauncherSectionsPanelPage.routeName),
+                ),
+                TextButton(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.wallpaper_outlined),
+                      Container(width: 8),
+                      Text(localizations.wallpaper, style: Theme.of(context).textTheme.bodyMedium),
+                    ],
                   ),
-                  const Divider(),
-                  TextButton(
-                    child: Row(
-                      children: [
-                        const Icon(Icons.settings_outlined),
-                        Container(width: 8),
-                        Text(localizations.systemSettings, style: Theme.of(context).textTheme.bodyMedium),
-                      ],
-                    ),
-                    onPressed: () => context.read<AppsService>().openSettings(),
+                  onPressed: () => Navigator.of(context).pushNamed(WallpaperPanelPage.routeName),
+                ),
+                TextButton(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.tips_and_updates),
+                      Container(width: 8),
+                      Text(localizations.statusBar, style: Theme.of(context).textTheme.bodyMedium),
+                    ],
                   ),
-                  const Divider(),
-                  TextButton(
-                    child: Row(
-                      children: [
-                        const Icon(Icons.date_range),
-                        Container(width: 8),
-                        Text(localizations.dateAndTimeFormat, style: Theme.of(context).textTheme.bodyMedium),
-                      ],
-                    ),
-                    onPressed: () async => await _dateTimeFormatDialog(context),
+                  onPressed: () => Navigator.of(context).pushNamed(StatusBarPanelPage.routeName),
+                ),
+                const Divider(),
+                TextButton(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.settings_outlined),
+                      Container(width: 8),
+                      Text(localizations.systemSettings, style: Theme.of(context).textTheme.bodyMedium),
+                    ],
                   ),
-                  TextButton(
-                    child: Row(
-                      children: [
-                        const Icon(Icons.arrow_back),
-                        Container(width: 8),
-                        Text(localizations.backButtonAction, style: Theme.of(context).textTheme.bodyMedium),
-                      ],
-                    ),
-                    onPressed: () async => await _backButtonActionDialog(context),
+                  onPressed: () => context.read<AppsService>().openSettings(),
+                ),
+                const Divider(),
+                TextButton(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.date_range),
+                      Container(width: 8),
+                      Text(localizations.dateAndTimeFormat, style: Theme.of(context).textTheme.bodyMedium),
+                    ],
                   ),
-                  RoundedSwitchListTile(
-                    value: settingsService.appHighlightAnimationEnabled,
-                    onChanged: (value) => settingsService.setAppHighlightAnimationEnabled(value),
-                    title: Text(localizations.appCardHighlightAnimation, style: Theme.of(context).textTheme.bodyMedium),
-                    secondary: Icon(Icons.filter_center_focus),
+                  onPressed: () async => await _dateTimeFormatDialog(context),
+                ),
+                TextButton(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.arrow_back),
+                      Container(width: 8),
+                      Text(localizations.backButtonAction, style: Theme.of(context).textTheme.bodyMedium),
+                    ],
                   ),
-                  RoundedSwitchListTile(
-                    value: settingsService.appKeyClickEnabled,
-                    onChanged: (value) => settingsService.setAppKeyClickEnabled(value),
-                    title: Text(localizations.appKeyClick, style: Theme.of(context).textTheme.bodyMedium),
-                    secondary: Icon(Icons.notifications_active),
-                  ),
-                  RoundedSwitchListTile(
-                      value: settingsService.showCategoryTitles,
-                      onChanged: (value) => settingsService.setShowCategoryTitles(value),
-                      title: Text(localizations.showCategoryTitles, style: Theme.of(context).textTheme.bodyMedium),
-                      secondary: Icon(Icons.abc)
-                  ),
-                  const Divider(),
-                  TextButton(
+                  onPressed: () async => await _backButtonActionDialog(context),
+                ),
+                RoundedSwitchListTile(
+                  value: settingsService.appHighlightAnimationEnabled,
+                  onChanged: (value) => settingsService.setAppHighlightAnimationEnabled(value),
+                  title: Text(localizations.appCardHighlightAnimation, style: Theme.of(context).textTheme.bodyMedium),
+                  secondary: Icon(Icons.filter_center_focus),
+                ),
+                RoundedSwitchListTile(
+                  value: settingsService.appKeyClickEnabled,
+                  onChanged: (value) => settingsService.setAppKeyClickEnabled(value),
+                  title: Text(localizations.appKeyClick, style: Theme.of(context).textTheme.bodyMedium),
+                  secondary: Icon(Icons.notifications_active),
+                ),
+                RoundedSwitchListTile(
+                    value: settingsService.showCategoryTitles,
+                    onChanged: (value) => settingsService.setShowCategoryTitles(value),
+                    title: Text(localizations.showCategoryTitles, style: Theme.of(context).textTheme.bodyMedium),
+                    secondary: Icon(Icons.abc)),
+                const RecommendationsSettings(),
+                const Divider(),
+                TextButton(
                     child: Row(
                       children: [
                         const Icon(Icons.info_outline),
@@ -154,22 +153,15 @@ class SettingsPanelPage extends StatelessWidget {
                       ],
                     ),
                     onPressed: () => showDialog(
-                      context: context,
-                      builder: (_) => FutureBuilder<PackageInfo>(
-                        future: PackageInfo.fromPlatform(),
-                        builder: (context, snapshot) => snapshot.connectionState == ConnectionState.done
-                            ? FLauncherAboutDialog(packageInfo: snapshot.data!)
-                            : Container(),
-                      )
-                    )
-                  )
-                ]
-              )
-            )
-          )
-        ]
-      )
-    );
+                        context: context,
+                        builder: (_) => FutureBuilder<PackageInfo>(
+                              future: PackageInfo.fromPlatform(),
+                              builder: (context, snapshot) => snapshot.connectionState == ConnectionState.done
+                                  ? FLauncherAboutDialog(packageInfo: snapshot.data!)
+                                  : Container(),
+                            )))
+              ])))
+            ]));
   }
 
   Future<void> _backButtonActionDialog(BuildContext context) async {
@@ -178,9 +170,7 @@ class SettingsPanelPage extends StatelessWidget {
 
     final newAction = await showDialog<String>(
         context: context,
-        builder: (context) => SimpleDialog(
-            title: Text(localizations.dialogTitleBackButtonAction),
-            children: [
+        builder: (context) => SimpleDialog(title: Text(localizations.dialogTitleBackButtonAction), children: [
               SimpleDialogOption(
                 child: Text(localizations.dialogOptionBackButtonActionDoNothing),
                 onPressed: () => Navigator.pop(context, ""),
@@ -193,9 +183,7 @@ class SettingsPanelPage extends StatelessWidget {
                 child: Text(localizations.dialogOptionBackButtonActionShowScreensaver),
                 onPressed: () => Navigator.pop(context, BACK_BUTTON_ACTION_SCREENSAVER),
               )
-            ]
-        )
-    );
+            ]));
 
     if (newAction != null) {
       await service.setBackButtonAction(newAction);
@@ -206,9 +194,7 @@ class SettingsPanelPage extends StatelessWidget {
     SettingsService service = context.read<SettingsService>();
 
     final formatTuple = await showDialog<Tuple2<String, String>>(
-        context: context,
-        builder: (_) => DateTimeFormatDialog(service.dateFormat, service.timeFormat)
-    );
+        context: context, builder: (_) => DateTimeFormatDialog(service.dateFormat, service.timeFormat));
 
     if (formatTuple != null) {
       await service.setDateTimeFormat(formatTuple.item1, formatTuple.item2);

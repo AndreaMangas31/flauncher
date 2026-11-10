@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import 'package:flauncher/widgets/tv_text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -35,11 +36,11 @@ class AddCategoryDialog extends StatelessWidget {
       contentPadding: EdgeInsets.all(24),
       title: Text(localizations.renameCategory),
       children: [
-        TextFormField(
+        TvTextFormField(
           autofocus: true,
           initialValue: initialValue,
           decoration: InputDecoration(labelText: localizations.name),
-          validator: (value) => value!.trim().isEmpty ? localizations.mustNotBeEmpty : null,
+          validator: (value) => value == null || value.trim().isEmpty ? localizations.mustNotBeEmpty : null,
           autovalidateMode: AutovalidateMode.always,
           keyboardType: TextInputType.text,
           textCapitalization: TextCapitalization.sentences,

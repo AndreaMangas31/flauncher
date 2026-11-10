@@ -32,12 +32,15 @@ const _showCategoryTitles = "show_category_titles";
 const _showDateInStatusBar = "show_date_in_status_bar";
 const _showTimeInStatusBar = "show_time_in_status_bar";
 const _timeFormat = "time_format";
+const _showRecommendations = "show_recommendations";
+const _recommendationsFeedUrl = "recommendations_feed_url";
 
 class SettingsService extends ChangeNotifier {
   static final defaultDateFormat = "EEEE d";
   static final defaultTimeFormat = "H:mm";
+  static const defaultRecommendationsFeedUrl =
+      "https://raw.githubusercontent.com/AndreaMangas31/flauncher/main/recommendations/recommendations.json";
   final SharedPreferences _sharedPreferences;
-
 
   bool get appHighlightAnimationEnabled => _sharedPreferences.getBool(_appHighlightAnimationEnabledKey) ?? true;
 
@@ -59,9 +62,17 @@ class SettingsService extends ChangeNotifier {
 
   String get timeFormat => _sharedPreferences.getString(_timeFormat) ?? defaultTimeFormat;
 
-  SettingsService(
-    this._sharedPreferences
-  );
+  bool get showRecommendations => _sharedPreferences.getBool(_showRecommendations) ?? true;
+
+  String get recommendationsFeedUrl {
+    final String stored = _sharedPreferences.getString(_recommendationsFeedUrl) ?? "";
+    if (stored.trim().isEmpty) {
+      return defaultRecommendationsFeedUrl;
+    }
+    return stored.trim();
+  }
+
+  SettingsService(this._sharedPreferences);
 
   Future<void> set(String key, bool value) async {
     await _sharedPreferences.setBool(key, value);
@@ -108,5 +119,18 @@ class SettingsService extends ChangeNotifier {
 
   Future<void> setShowTimeInStatusBar(bool show) async {
     return set(_showTimeInStatusBar, show);
+  }
+
+  Future<void> setShowRecommendations(bool show) {
+    return set(_showRecommendations, show);
+  }
+
+  Future<void> setRecommendationsFeedUrl(String value) async {
+    final String trimmed = value.trim();
+    await _sharedPreferences.setString(
+      _recommendationsFeedUrl,
+      trimmed.isEmpty ? defaultRecommendationsFeedUrl : trimmed,
+    );
+    notifyListeners();
   }
 }

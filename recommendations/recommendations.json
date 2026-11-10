@@ -1,0 +1,34 @@
+{
+  "updatedAt": "2026-11-10T00:00:00Z",
+  "items": [
+    {
+      "title": "Ejemplo: serie de placeholder",
+      "description": "Entrada de ejemplo. Sustituye este feed por recomendaciones reales de series.",
+      "platform": "Netflix",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://placehold.co/300x450/png?text=Serie",
+      "deepLink": "https://www.netflix.com/title/80057281",
+      "packageName": "com.netflix.ninja"
+    },
+    {
+      "title": "Ejemplo: película de placeholder",
+      "description": "Segunda entrada de ejemplo para probar el foco del mando y la ficha.",
+      "platform": "Disney+",
+      "type": "película",
+      "status": "estreno",
+      "imageUrl": "https://placehold.co/300x450/png?text=Pelicula",
+      "deepLink": "https://www.disneyplus.com/",
+      "packageName": "com.disney.disneyplus"
+    },
+    {
+      "title": "Ejemplo: anime de placeholder",
+      "description": "Tercera entrada de ejemplo. El enlace es opcional; si no abre, se lanza la app.",
+      "platform": "Crunchyroll",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://placehold.co/300x450/png?text=Anime",
+      "packageName": "com.crunchyroll.crunchyroid"
+    }
+  ]
+}

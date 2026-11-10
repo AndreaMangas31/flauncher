@@ -99,5 +99,8 @@
     "typeInTheHourFormat": "Type in the hour format",
     "uninstall": "Uninstall",
     "wallpaper": "Wallpaper",
-    "withEllipsisAddTo": "Add to..."
+    "withEllipsisAddTo": "Add to...",
+    "showRecommendations": "Show Recomendadas por Senku",
+    "recommendationsFeedUrl": "Recommendations feed URL",
+    "recommendationsRow": "Recomendadas por Senku"
 }
