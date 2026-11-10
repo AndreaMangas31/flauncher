@@ -39,6 +39,9 @@ const _validationKeys = [
 ];
 
 class AppCard extends StatefulWidget {
+  /// Counts builds so a test can see that a focus move does not repaint the row.
+  static int buildCount = 0;
+
   final App application;
   final Category category;
   final bool autofocus;
@@ -90,7 +93,10 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
   }
 
   @override
-  Widget build(BuildContext context) => FocusKeyboardListener(
+  Widget build(BuildContext context) {
+    AppCard.buildCount++;
+    return RepaintBoundary(
+      child: FocusKeyboardListener(
         onPressed: (key) => _onPressed(context, key),
         onLongPress: (key) => _onLongPress(context, key),
         builder: (context) {
@@ -105,8 +111,9 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
               transform: _scaleTransform(context),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(EmeraldShrine.tileRadius),
-                boxShadow:
-                    shouldHighlight ? EmeraldShrine.focusShadows : const [],
+                boxShadow: shouldHighlight
+                    ? EmeraldShrine.focusShadows
+                    : const <BoxShadow>[],
               ),
               child: Material(
                 color: EmeraldShrine.surfaceTint,
@@ -139,14 +146,6 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
                       },
                     ),
                     if (_moving) ..._arrows(),
-                    IgnorePointer(
-                      child: AnimatedOpacity(
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeInOut,
-                        opacity: shouldHighlight ? 0 : 0.10,
-                        child: Container(color: Colors.black),
-                      ),
-                    ),
                     Selector<SettingsService, bool>(
                       selector: (_, settingsService) =>
                           settingsService.appHighlightAnimationEnabled &&
@@ -196,7 +195,9 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
             ),
           );
         },
-      );
+      ),
+    );
+  }
 
   Future<Tuple2<AppImageType, ImageProvider>> _loadAppBannerOrIcon(
       AppsService service) async {
@@ -210,7 +211,17 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
       bytes = await service.getAppIcon(widget.application.packageName);
     }
 
-    return Tuple2(type, MemoryImage(bytes));
+    // Android TV banners are 320×180. Decode at that size even if the
+    // package handed back a larger bitmap.
+    return Tuple2(
+      type,
+      ResizeImage(
+        MemoryImage(bytes),
+        width: type == AppImageType.Banner ? 320 : 128,
+        height: type == AppImageType.Banner ? 180 : 128,
+        policy: ResizeImagePolicy.fit,
+      ),
+    );
   }
 
   Widget _appImage() {

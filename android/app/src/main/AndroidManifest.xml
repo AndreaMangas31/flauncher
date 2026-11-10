@@ -134,5 +134,14 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!--
+          Skia, not Impeller. Flutter 3.24's Impeller GLES backend is still
+          opt-in, and on this MediaTek Mali GPU the first frames compile
+          shaders while the 1.8 GB device is already swapping. Skia is the
+          renderer this Flutter version ships as the Android default.
+        -->
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="false" />
     </application>
 </manifest>

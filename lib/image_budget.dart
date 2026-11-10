@@ -30,7 +30,11 @@ const int imageCacheByteBudget = 48 * 1024 * 1024;
 /// so the cap still leaves room for banners and a few posters.
 void installImageCacheBudget() {
   final ImageCache cache = PaintingBinding.instance.imageCache;
-  cache.maximumSize = 64;
+  // Banners, the shrine plate, platform icons, and the posters on screen.
+  // 32 was tight enough that a second decode of the same poster (a new
+  // cache key while focus moved) evicted the first. 48 still fits in the
+  // 48 MB byte cap because each poster is only a few hundred kilobytes.
+  cache.maximumSize = 48;
   cache.maximumSizeBytes = imageCacheByteBudget;
 }
 

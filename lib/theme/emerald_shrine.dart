@@ -37,8 +37,11 @@ class EmeraldShrine {
   static const Color surfaceTint = Color(0xD1171C1C);
   static const Color focusGlow = Color(0x8C2FD08C);
 
+  /// A solid ring, not a blurred shadow. Blur goes through saveLayer, and
+  /// that is a full-screen allocation on this Mali GPU. The accent border
+  /// on the tile is the actual focus mark; this only thickens it.
   static const List<BoxShadow> focusShadows = [
-    BoxShadow(color: focusGlow, blurRadius: 16, spreadRadius: 1),
+    BoxShadow(color: focusGlow, blurRadius: 0, spreadRadius: 2),
   ];
 
   static TextStyle heading({double fontSize = 22, Color color = text}) =>

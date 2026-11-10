@@ -42,7 +42,10 @@ class SettingsService extends ChangeNotifier {
       "https://raw.githubusercontent.com/AndreaMangas31/flauncher/main/recommendations/recommendations.json";
   final SharedPreferences _sharedPreferences;
 
-  bool get appHighlightAnimationEnabled => _sharedPreferences.getBool(_appHighlightAnimationEnabledKey) ?? true;
+  /// Off unless the user turns it on. The pulse rebuilds the focused border
+  /// on every frame, which is the wrong default for a 1.8 GB television.
+  bool get appHighlightAnimationEnabled =>
+      _sharedPreferences.getBool(_appHighlightAnimationEnabledKey) ?? false;
 
   bool get appKeyClickEnabled => _sharedPreferences.getBool(_appKeyClickEnabledKey) ?? true;
 
