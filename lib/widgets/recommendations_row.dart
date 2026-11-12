@@ -69,7 +69,7 @@ class _RecommendationsRowState extends State<RecommendationsRow> {
         // Posters keep their 156×248 proportion and only shrink when the
         // column is shorter than that. The detail strip stays under them.
         return Padding(
-          padding: const EdgeInsets.only(top: 4),
+          padding: const EdgeInsets.only(top: 4, bottom: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -102,7 +102,8 @@ class _RecommendationsRowState extends State<RecommendationsRow> {
                           child: ListView.separated(
                             key: const Key('recommendation-posters'),
                             controller: controller,
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 8)
+                                .copyWith(top: 10, bottom: 8),
                             scrollDirection: Axis.horizontal,
                             // One extra poster, not the whole feed.
                             cacheExtent: 80,
@@ -158,9 +159,8 @@ class _DetailStrip extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(8, 8, 8, 0),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       decoration: BoxDecoration(
-        color: EmeraldShrine.surface.withOpacity(0.78),
+        color: const Color.fromARGB(255, 135, 219, 184).withOpacity(0.28),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: EmeraldShrine.accent, width: 1.5),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -172,7 +172,7 @@ class _DetailStrip extends StatelessWidget {
               key: const Key('recommendation-detail-title'),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: EmeraldShrine.posterTitle(fontSize: 20),
+              style: EmeraldShrine.posterTitle(fontSize: 18),
             ),
           ),
           Container(
@@ -188,7 +188,7 @@ class _DetailStrip extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: EmeraldShrine.body(
-                  fontSize: 15, color: EmeraldShrine.secondaryText),
+                  fontSize: 12, color: EmeraldShrine.secondaryText),
             ),
           ),
         ],
@@ -289,7 +289,7 @@ class _RecommendationPosterState extends State<_RecommendationPoster> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.center,
-                            style: EmeraldShrine.posterTitle(fontSize: 15)
+                            style: EmeraldShrine.posterTitle(fontSize: 10)
                                 .copyWith(
                               shadows: const [
                                 Shadow(color: Color(0xCC000000), blurRadius: 6),
