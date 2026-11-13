@@ -1,94 +1,82 @@
 {
-  "updatedAt": "2026-11-10T21:17:02+01:00",
+  "updatedAt": "2026-11-13T17:15:00+01:00",
   "items": [
     {
-      "title": "El plan del diablo (temporada 3)",
-      "description": "Vuelve el reality coreano de estrategia: dieciséis concursantes se enfrentan en pruebas de ingenio, alianzas y faroles. La temporada Dead Again se estrena hoy en Netflix España.",
-      "platform": "Netflix",
-      "type": "serie",
-      "status": "estreno",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/pLchMEuUbr4sbpCSNsQXCD0l5E7.jpg",
-      "deepLink": "https://www.netflix.com/es/title/81653386",
-      "packageName": "com.netflix.ninja"
-    },
-    {
-      "title": "VisionQuest",
-      "description": "Paul Bettany regresa como Visión en la serie de Marvel que cierra la trilogía de Bruja Escarlata y Visión. Un Visión reiniciado huye con Thomas Shepherd mientras intenta entender quién es, y el final llega el 11 de noviembre.",
-      "platform": "Disney+",
-      "type": "serie",
-      "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/hXlvDq98VMg3WJWTDzwcPeMk39A.jpg",
-      "deepLink": "https://www.disneyplus.com/es-es/browse/entity-8744ec55-8d14-4631-99b4-c889a2d6013f",
-      "packageName": "com.disney.disneyplus"
-    },
-    {
-      "title": "Black Clover (temporada 2)",
-      "description": "Asta y los Caballeros Mágicos regresan con más fantasía y acción en Crunchyroll. El simulcast de la segunda temporada sigue en marcha; el episodio 7 llega el 14 de noviembre.",
-      "platform": "Crunchyroll",
-      "type": "serie",
-      "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/caWtp9F4m5Ef2MTAmnSnqpqjT8i.jpg",
-      "deepLink": "https://www.crunchyroll.com/es-es/series/GRE50KV36/black-clover",
-      "packageName": "com.crunchyroll.crunchyroid"
-    },
-    {
-      "title": "Las Kardashian (temporada 8)",
-      "description": "Kris, Kim, Kourtney, Khloé, Kendall y Kylie vuelven con una temporada centrada en el amor, la reinvención y sus nuevos rumbos. Se estrenó el 8 de octubre en Disney+ España, con episodios nuevos cada miércoles.",
-      "platform": "Disney+",
-      "type": "serie",
-      "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/g1U84qP4B4Y51tU0El8Y6s30KE2.jpg",
-      "deepLink": "https://www.disneyplus.com/es-es/browse/entity-7840bf30-f440-48d4-bf81-55d8cb24457a",
-      "packageName": "com.disney.disneyplus"
-    },
-    {
-      "title": "Dragon Ball Super: Beerus",
-      "description": "La batalla contra el Dios de la Destrucción se recuenta en esta serie semanal. En España, Crunchyroll la emite en simulcast cada domingo; el episodio 5 se estrenó el 8 de noviembre.",
-      "platform": "Crunchyroll",
-      "type": "serie",
-      "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/AojgldgsOlzZV8ahyOzaiAjJWvV.jpg",
-      "deepLink": "https://www.crunchyroll.com/es-es/series/GT00389311/dragon-ball-super-beerus",
-      "packageName": "com.crunchyroll.crunchyroid"
-    },
-    {
-      "title": "La emperatriz divorciada",
-      "description": "Adaptación del webtoon de NAVER: la emperatriz Navier acepta el divorcio a cambio de poder volver a casarse y recuperar su poder. Llegó el 3 de noviembre a Disney+ España y sigue estrenando episodios cada miércoles.",
-      "platform": "Disney+",
-      "type": "serie",
-      "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/7cS90VaWOqQhgmsT0FYXYmIMcRp.jpg",
-      "deepLink": "https://www.disneyplus.com/es-es/browse/entity-b02d61cd-3aab-4412-b33d-3512712a91f0",
-      "packageName": "com.disney.disneyplus"
-    },
-    {
-      "title": "Magic Knight Rayearth (2026)",
-      "description": "El remake de las Guerreras Mágicas de los 90: tres chicas son invocadas a un mundo de fantasía para salvar el reino de Cephiro. Se estrenó el 7 de octubre y sigue en emisión en Crunchyroll.",
-      "platform": "Crunchyroll",
-      "type": "serie",
-      "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/evpXDaPMlXgudEIMe1Lxdql3Jmu.jpg",
-      "deepLink": "https://www.crunchyroll.com/es-es/series/GT00383994/magic-knight-rayearth-2026",
-      "packageName": "com.crunchyroll.crunchyroid"
-    },
-    {
-      "title": "Los siete caballeros del Reino Marronnier",
-      "description": "Anime de fantasía en el que los siete príncipes de Marronnier parten como embajadores a los reinos vecinos. Se emite en Prime Video España desde el 3 de octubre, con capítulos semanales.",
+      "title": "Los anillos de poder (temporada 3)",
+      "description": "Vuelve la Tierra Media: cinco años después de la caída de Eregion, Sauron gobierna abiertamente desde Mordor. Prime Video estrenó cuatro episodios el 11 de noviembre; los siguientes llegan el 18 y el 25.",
       "platform": "Prime Video",
       "type": "serie",
-      "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/xev0hYJm5F2VaH6XxM8wqSDYgQg.jpg",
-      "deepLink": "https://www.primevideo.com/-/es/detail/0MWCE6QKWI8NTMW0R53A91T2HY",
+      "status": "estreno",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/xdsgZ60TBFiuAIvGPtxRsjDt4NV.jpg",
+      "deepLink": "https://www.primevideo.com/-/es/detail/0NGJWN4I3V9O8AY50RRY31MQV4",
       "packageName": "com.amazon.amazonvideo.livingroom"
     },
     {
-      "title": "Los diarios de la boticaria (temporada 3)",
-      "description": "Maomao sigue usando su ingenio de boticaria en la corte imperial, ahora ante rumores y amenazas que van más allá del palacio. La temporada 3 se emite cada viernes en Crunchyroll; el episodio 7 llega el 13 de noviembre.",
+      "title": "Style Wars",
+      "description": "Reality coreano de supervivencia de moda: 72 participantes compiten y solo importa el estilo. Con Lee Hyeri y Hong Jinkyung. Se estrenó el 11 de noviembre en Disney+, con dos episodios cada miércoles.",
+      "platform": "Disney+",
+      "type": "serie",
+      "status": "estreno",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/huoiVrSJAd5TqqRYKCCMVbyvxQe.jpg",
+      "deepLink": "https://www.disneyplus.com/es-es/browse/entity-48718a21-c9c9-487a-a655-d81a9f44c7de",
+      "packageName": "com.disney.disneyplus"
+    },
+    {
+      "title": "Vengadores: Endgame Encore",
+      "description": "Edición especial de Endgame con escenas nuevas y un adelanto exclusivo de Vengadores: Doomsday, que llega a cines el 17 de diciembre. Disponible en Disney+ desde hoy, 13 de noviembre.",
+      "platform": "Disney+",
+      "type": "película",
+      "status": "estreno",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/br6krBFpaYmCSglLBWRuhui7tPc.jpg",
+      "packageName": "com.disney.disneyplus"
+    },
+    {
+      "title": "La edad dorada (temporada 4)",
+      "description": "Intrigas, rivalidades y escándalos de la alta sociedad neoyorquina del siglo XIX. La cuarta temporada se estrenó el 2 de noviembre en HBO Max, con un episodio nuevo cada lunes hasta el 21 de diciembre.",
+      "platform": "HBO Max",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/o6F0N46WsVc43h6LVJtnvQiky0s.jpg",
+      "packageName": "com.wbd.stream"
+    },
+    {
+      "title": "Ranma 1/2 (temporada 3)",
+      "description": "El remake de MAPPA del clásico de Rumiko Takahashi sigue con Ranma, Akane, Ryoga y Shampoo. En exclusiva en Netflix, con un episodio nuevo cada sábado.",
+      "platform": "Netflix",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/xvgflNHdEClMcAR9RuPtJiPDPkp.jpg",
+      "deepLink": "https://www.netflix.com/es/title/81171925",
+      "packageName": "com.netflix.ninja"
+    },
+    {
+      "title": "La caja azul (temporada 2)",
+      "description": "Taiki y Chinatsu siguen entre el bádminton, el baloncesto y lo que sienten el uno por el otro, ahora con la llegada de Yumeka. Episodio nuevo cada domingo en Netflix.",
+      "platform": "Netflix",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/nkGujfVo3eHMYivgbfLySE7NQPc.jpg",
+      "deepLink": "https://www.netflix.com/es/title/81663323",
+      "packageName": "com.netflix.ninja"
+    },
+    {
+      "title": "Overgeared",
+      "description": "Grid, un jugador sin suerte, se convierte en heredero de un herrero legendario dentro de un juego de fantasía y sus estadísticas se reinician a cero. En simulcast en Crunchyroll.",
       "platform": "Crunchyroll",
       "type": "serie",
       "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/bYPACmBf5Nomw3I2IEGGTNwgvWj.jpg",
-      "deepLink": "https://www.crunchyroll.com/es-es/series/G3KHEVDJ7/the-apothecary-diaries",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/94GLmulA9qVGsuo9kLpVKi01E2Z.jpg",
+      "deepLink": "https://www.crunchyroll.com/es-es/series/GT00384004/overgeared",
+      "packageName": "com.crunchyroll.crunchyroid"
+    },
+    {
+      "title": "A Tale of the Secret Saint",
+      "description": "Fantasía con reencarnación: la que fue la Gran Santa en otra vida intenta ocultar que lo es. Se estrenó el 3 de octubre y sigue en emisión en Crunchyroll.",
+      "platform": "Crunchyroll",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/1ETsQwBbwtaPN9SeczbQzg2mo0n.jpg",
+      "deepLink": "https://www.crunchyroll.com/es-es/series/GT00371633/a-tale-of-the-secret-saint",
       "packageName": "com.crunchyroll.crunchyroid"
     }
   ]
