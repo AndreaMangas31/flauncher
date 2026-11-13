@@ -23,8 +23,7 @@ import 'dart:io';
 import 'package:flauncher/flauncher_channel.dart';
 import 'package:flauncher/models/recommendation.dart';
 import 'package:flauncher/providers/settings_service.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 typedef RecommendationFetcher = Future<String?> Function(Uri uri);
@@ -32,16 +31,22 @@ typedef RecommendationFetcher = Future<String?> Function(Uri uri);
 const String recommendationsCacheKey = "recommendations_cache";
 const Duration recommendationsRefreshInterval = Duration(hours: 6);
 
-class RecommendationsService extends ChangeNotifier {
+/// Minimum gap between Friday resume fetches. The weekly feed should show
+/// up on the next return home, not on every trip back to the launcher.
+const Duration recommendationsFridayResumeInterval = Duration(minutes: 15);
+
+class RecommendationsService extends ChangeNotifier with WidgetsBindingObserver {
   final SharedPreferences _preferences;
   final SettingsService _settings;
   final FLauncherChannel _channel;
   final RecommendationFetcher _fetcher;
+  final DateTime Function() _now;
 
   RecommendationFeed? _feed;
   Timer? _timer;
   String? _loadedUrl;
   bool _refreshing = false;
+  DateTime? _lastFetchAttempt;
 
   RecommendationsService(
     this._preferences,
@@ -49,9 +54,14 @@ class RecommendationsService extends ChangeNotifier {
     this._channel, {
     RecommendationFetcher? fetcher,
     bool periodicRefresh = true,
-  }) : _fetcher = fetcher ?? _fetchFeed {
+    DateTime Function()? now,
+  })  : _fetcher = fetcher ?? _fetchFeed,
+        _now = now ?? DateTime.now {
     _restoreCache();
     _settings.addListener(_onSettingsChanged);
+    // The dream isolate never constructs this service (it only reads the
+    // cached feed), so the resume observer does not run there.
+    WidgetsBinding.instance.addObserver(this);
     if (periodicRefresh) {
       _timer = Timer.periodic(recommendationsRefreshInterval, (_) {
         refresh();
@@ -59,7 +69,7 @@ class RecommendationsService extends ChangeNotifier {
     }
     // The cached feed is already on screen. The network refresh waits until
     // the first frame so it does not compete with the app list.
-    SchedulerBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       refresh();
     });
   }
@@ -77,9 +87,34 @@ class RecommendationsService extends ChangeNotifier {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     _settings.removeListener(_onSettingsChanged);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refreshOnFridayResume();
+    }
+  }
+
+  // Friday return home. The feed is published that day in Europe/Madrid;
+  // the television's local clock is the one we follow. The 6-hour timer
+  // still runs every day. This only avoids waiting out the rest of that
+  // window, and it will not start another fetch within
+  // recommendationsFridayResumeInterval of the last attempt.
+  void _refreshOnFridayResume() {
+    final DateTime now = _now();
+    if (now.weekday != DateTime.friday) {
+      return;
+    }
+    final DateTime? lastAttempt = _lastFetchAttempt;
+    if (lastAttempt != null && now.difference(lastAttempt) < recommendationsFridayResumeInterval) {
+      return;
+    }
+    refresh();
   }
 
   Future<void> open(Recommendation item) async {
@@ -95,6 +130,9 @@ class RecommendationsService extends ChangeNotifier {
       return;
     }
     _refreshing = true;
+    // Count a failed try as well as a success, so Friday resumes do not
+    // retry in a loop while the network is down.
+    _lastFetchAttempt = _now();
     try {
       final String url = _settings.recommendationsFeedUrl;
       final Uri? uri = Uri.tryParse(url);
