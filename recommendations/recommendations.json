@@ -1,82 +1,86 @@
 {
-  "updatedAt": "2026-11-13T17:15:00+01:00",
+  "updatedAt": "2026-11-20T17:15:00+01:00",
   "items": [
     {
-      "title": "Los anillos de poder (temporada 3)",
-      "description": "Vuelve la Tierra Media: cinco años después de la caída de Eregion, Sauron gobierna abiertamente desde Mordor. Prime Video estrenó cuatro episodios el 11 de noviembre; los siguientes llegan el 18 y el 25.",
-      "platform": "Prime Video",
+      "title": "Percy Jackson y los dioses del Olimpo (temporada 3)",
+      "description": "Percy vuelve a Campamento Mestizo para una nueva misión entre dioses y monstruos. Se estrenó hoy, 20 de noviembre, con dos episodios; llegan dos más cada viernes hasta el 11 de diciembre.",
+      "platform": "Disney+",
       "type": "serie",
       "status": "estreno",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/zVcpkAw47UmTd2AXIhl3gOpeguT.jpg",
+      "packageName": "com.disney.disneyplus"
+    },
+    {
+      "title": "La emperatriz divorciada",
+      "description": "K-drama de fantasía romántica basado en el webtoon: Navier acepta el divorcio del emperador a cambio de casarse con el príncipe del reino rival. Con Shin Min-a y Lee Jong-suk. Dos episodios cada miércoles hasta el 25 de noviembre.",
+      "platform": "Disney+",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/7cS90VaWOqQhgmsT0FYXYmIMcRp.jpg",
+      "packageName": "com.disney.disneyplus"
+    },
+    {
+      "title": "VisionQuest",
+      "description": "Marvel: tras reiniciarse, Visión huye de quienes quieren convertirlo en un arma y busca un nuevo propósito. El último episodio llegó el 11 de noviembre, así que ya está completa.",
+      "platform": "Disney+",
+      "type": "serie",
+      "status": "estreno",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/oi9AqvVPEIjuQW3YmoFquoQKllj.jpg",
+      "packageName": "com.disney.disneyplus"
+    },
+    {
+      "title": "Rivales (temporada 2, parte 2)",
+      "description": "Escándalos, rivalidades y cotilleo en la televisión británica de los 80. La segunda parte llegó el 11 de noviembre y sigue con episodio nuevo cada miércoles hasta el final, el 2 de diciembre.",
+      "platform": "Disney+",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/lqHG7Rd3X8JyfiiicNdZUiX2HFo.jpg",
+      "packageName": "com.disney.disneyplus"
+    },
+    {
+      "title": "El plan del diablo: Dead Again",
+      "description": "Reality coreano de estrategia y juegos de ingenio con 16 jugadores (temporada 3). Se estrenó el 10 de noviembre y los episodios 6 al 10 llegaron el 17.",
+      "platform": "Netflix",
+      "type": "serie",
+      "status": "estreno",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/dklJkk6OMBwsjYOLAtTgw0g2YzO.jpg",
+      "packageName": "com.netflix.ninja"
+    },
+    {
+      "title": "Los anillos de poder (temporada 3)",
+      "description": "Sauron gobierna desde Mordor y la Tierra Media se une contra él. Nuevo episodio el 18 de noviembre; el final de temporada llega el 25.",
+      "platform": "Prime Video",
+      "type": "serie",
+      "status": "en emisión",
       "imageUrl": "https://image.tmdb.org/t/p/w500/xdsgZ60TBFiuAIvGPtxRsjDt4NV.jpg",
       "deepLink": "https://www.primevideo.com/-/es/detail/0NGJWN4I3V9O8AY50RRY31MQV4",
       "packageName": "com.amazon.amazonvideo.livingroom"
     },
     {
-      "title": "Style Wars",
-      "description": "Reality coreano de supervivencia de moda: 72 participantes compiten y solo importa el estilo. Con Lee Hyeri y Hong Jinkyung. Se estrenó el 11 de noviembre en Disney+, con dos episodios cada miércoles.",
-      "platform": "Disney+",
-      "type": "serie",
-      "status": "estreno",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/huoiVrSJAd5TqqRYKCCMVbyvxQe.jpg",
-      "deepLink": "https://www.disneyplus.com/es-es/browse/entity-48718a21-c9c9-487a-a655-d81a9f44c7de",
-      "packageName": "com.disney.disneyplus"
-    },
-    {
-      "title": "Vengadores: Endgame Encore",
-      "description": "Edición especial de Endgame con escenas nuevas y un adelanto exclusivo de Vengadores: Doomsday, que llega a cines el 17 de diciembre. Disponible en Disney+ desde hoy, 13 de noviembre.",
-      "platform": "Disney+",
-      "type": "película",
-      "status": "estreno",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/br6krBFpaYmCSglLBWRuhui7tPc.jpg",
-      "packageName": "com.disney.disneyplus"
-    },
-    {
-      "title": "La edad dorada (temporada 4)",
-      "description": "Intrigas, rivalidades y escándalos de la alta sociedad neoyorquina del siglo XIX. La cuarta temporada se estrenó el 2 de noviembre en HBO Max, con un episodio nuevo cada lunes hasta el 21 de diciembre.",
-      "platform": "HBO Max",
-      "type": "serie",
-      "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/o6F0N46WsVc43h6LVJtnvQiky0s.jpg",
-      "packageName": "com.wbd.stream"
-    },
-    {
-      "title": "Ranma 1/2 (temporada 3)",
-      "description": "El remake de MAPPA del clásico de Rumiko Takahashi sigue con Ranma, Akane, Ryoga y Shampoo. En exclusiva en Netflix, con un episodio nuevo cada sábado.",
-      "platform": "Netflix",
-      "type": "serie",
-      "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/xvgflNHdEClMcAR9RuPtJiPDPkp.jpg",
-      "deepLink": "https://www.netflix.com/es/title/81171925",
-      "packageName": "com.netflix.ninja"
-    },
-    {
-      "title": "La caja azul (temporada 2)",
-      "description": "Taiki y Chinatsu siguen entre el bádminton, el baloncesto y lo que sienten el uno por el otro, ahora con la llegada de Yumeka. Episodio nuevo cada domingo en Netflix.",
-      "platform": "Netflix",
-      "type": "serie",
-      "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/nkGujfVo3eHMYivgbfLySE7NQPc.jpg",
-      "deepLink": "https://www.netflix.com/es/title/81663323",
-      "packageName": "com.netflix.ninja"
-    },
-    {
-      "title": "Overgeared",
-      "description": "Grid, un jugador sin suerte, se convierte en heredero de un herrero legendario dentro de un juego de fantasía y sus estadísticas se reinician a cero. En simulcast en Crunchyroll.",
+      "title": "From Far Away",
+      "description": "Noriko cae de repente en un mundo de fantasía y su destino se cruza con el de Izark, un joven misterioso. Adaptación del clásico shōjo, en simulcast desde octubre.",
       "platform": "Crunchyroll",
       "type": "serie",
       "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/94GLmulA9qVGsuo9kLpVKi01E2Z.jpg",
-      "deepLink": "https://www.crunchyroll.com/es-es/series/GT00384004/overgeared",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/rHI61poyqC6GF0HRurV6Hq12K81.jpg",
       "packageName": "com.crunchyroll.crunchyroid"
     },
     {
-      "title": "A Tale of the Secret Saint",
-      "description": "Fantasía con reencarnación: la que fue la Gran Santa en otra vida intenta ocultar que lo es. Se estrenó el 3 de octubre y sigue en emisión en Crunchyroll.",
+      "title": "A Returner's Magic Should Be Special (temporada 2)",
+      "description": "Desir vuelve al pasado para evitar la caída de la humanidad ante el Dominio de las Sombras. Nueva temporada con episodio cada miércoles.",
       "platform": "Crunchyroll",
       "type": "serie",
       "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/1ETsQwBbwtaPN9SeczbQzg2mo0n.jpg",
-      "deepLink": "https://www.crunchyroll.com/es-es/series/GT00371633/a-tale-of-the-secret-saint",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/svwCvfLCUqc5tn85lijkKqTXQLF.jpg",
+      "packageName": "com.crunchyroll.crunchyroid"
+    },
+    {
+      "title": "Dreamland",
+      "description": "Terrence se convierte en Viajero y explora Dreamland, un mundo hecho de los sueños de la humanidad, donde aprende a dominar el fuego. En simulcast desde el 16 de octubre.",
+      "platform": "Crunchyroll",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/u4kYL7PSYFGTCZPMOaozPnDWzj6.jpg",
       "packageName": "com.crunchyroll.crunchyroid"
     }
   ]
