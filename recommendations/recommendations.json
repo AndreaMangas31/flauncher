@@ -1,86 +1,74 @@
 {
-  "updatedAt": "2026-11-20T17:15:00+01:00",
+  "updatedAt": "2026-11-27T17:30:00+01:00",
   "items": [
     {
-      "title": "Percy Jackson y los dioses del Olimpo (temporada 3)",
-      "description": "Percy vuelve a Campamento Mestizo para una nueva misión entre dioses y monstruos. Se estrenó hoy, 20 de noviembre, con dos episodios; llegan dos más cada viernes hasta el 11 de diciembre.",
-      "platform": "Disney+",
+      "title": "Las esposas cazadoras (temporada 2)",
+      "description": "Sophie y Margo vuelven a cruzarse entre secretos, cotilleo de pueblo rico y tensión entre ellas. Thriller con romance entre mujeres; los 8 episodios llegaron el 26 de noviembre.",
+      "platform": "Netflix",
       "type": "serie",
       "status": "estreno",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/1HaPE9JjSjwQpXunsq5otOA8Hdj.jpg",
+      "packageName": "com.netflix.ninja"
+    },
+    {
+      "title": "15 pruebas de amor",
+      "description": "Comedia dramática francesa: Céline tiene que pasar un proceso de adopción para que la reconozcan como madre de la hija que espera su esposa, Nadia. Exclusiva de Filmin desde el 26 de noviembre.",
+      "platform": "Filmin",
+      "type": "película",
+      "status": "estreno",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/sxSOsjndqxaLnyNCE2GzunoP6e5.jpg"
+    },
+    {
+      "title": "Percy Jackson y los dioses del Olimpo (temporada 3)",
+      "description": "Percy sigue su misión entre dioses y monstruos. Hoy, 27 de noviembre, llegaron los episodios 3 y 4; dos más cada viernes hasta el 11 de diciembre.",
+      "platform": "Disney+",
+      "type": "serie",
+      "status": "en emisión",
       "imageUrl": "https://image.tmdb.org/t/p/w500/zVcpkAw47UmTd2AXIhl3gOpeguT.jpg",
       "packageName": "com.disney.disneyplus"
     },
     {
-      "title": "La emperatriz divorciada",
-      "description": "K-drama de fantasía romántica basado en el webtoon: Navier acepta el divorcio del emperador a cambio de casarse con el príncipe del reino rival. Con Shin Min-a y Lee Jong-suk. Dos episodios cada miércoles hasta el 25 de noviembre.",
+      "title": "Style Wars",
+      "description": "Reality coreano de supervivencia de moda con 72 concursantes, retos y eliminaciones. Dos episodios cada miércoles; el final llega el 9 de diciembre.",
       "platform": "Disney+",
       "type": "serie",
       "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/7cS90VaWOqQhgmsT0FYXYmIMcRp.jpg",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/huoiVrSJAd5TqqRYKCCMVbyvxQe.jpg",
       "packageName": "com.disney.disneyplus"
     },
     {
-      "title": "VisionQuest",
-      "description": "Marvel: tras reiniciarse, Visión huye de quienes quieren convertirlo en un arma y busca un nuevo propósito. El último episodio llegó el 11 de noviembre, así que ya está completa.",
-      "platform": "Disney+",
-      "type": "serie",
-      "status": "estreno",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/oi9AqvVPEIjuQW3YmoFquoQKllj.jpg",
-      "packageName": "com.disney.disneyplus"
-    },
-    {
-      "title": "Rivales (temporada 2, parte 2)",
-      "description": "Escándalos, rivalidades y cotilleo en la televisión británica de los 80. La segunda parte llegó el 11 de noviembre y sigue con episodio nuevo cada miércoles hasta el final, el 2 de diciembre.",
-      "platform": "Disney+",
-      "type": "serie",
-      "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/lqHG7Rd3X8JyfiiicNdZUiX2HFo.jpg",
-      "packageName": "com.disney.disneyplus"
-    },
-    {
-      "title": "El plan del diablo: Dead Again",
-      "description": "Reality coreano de estrategia y juegos de ingenio con 16 jugadores (temporada 3). Se estrenó el 10 de noviembre y los episodios 6 al 10 llegaron el 17.",
-      "platform": "Netflix",
-      "type": "serie",
-      "status": "estreno",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/dklJkk6OMBwsjYOLAtTgw0g2YzO.jpg",
-      "packageName": "com.netflix.ninja"
-    },
-    {
-      "title": "Los anillos de poder (temporada 3)",
-      "description": "Sauron gobierna desde Mordor y la Tierra Media se une contra él. Nuevo episodio el 18 de noviembre; el final de temporada llega el 25.",
+      "title": "Blade Runner 2099",
+      "description": "Miniserie de ciencia ficción que continúa el universo de Blade Runner, con Michelle Yeoh y Hunter Schafer. Los 8 episodios están disponibles desde el 25 de noviembre.",
       "platform": "Prime Video",
       "type": "serie",
-      "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/xdsgZ60TBFiuAIvGPtxRsjDt4NV.jpg",
-      "deepLink": "https://www.primevideo.com/-/es/detail/0NGJWN4I3V9O8AY50RRY31MQV4",
+      "status": "estreno",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/d8IKBDXQvj3d6clsjqydT4xcw14.jpg",
       "packageName": "com.amazon.amazonvideo.livingroom"
     },
     {
-      "title": "From Far Away",
-      "description": "Noriko cae de repente en un mundo de fantasía y su destino se cruza con el de Izark, un joven misterioso. Adaptación del clásico shōjo, en simulcast desde octubre.",
+      "title": "La edad dorada (temporada 4)",
+      "description": "Intrigas, rivalidades y escándalos de la alta sociedad neoyorquina del siglo XIX. Episodio nuevo cada lunes hasta el final, el 21 de diciembre.",
+      "platform": "HBO Max",
+      "type": "serie",
+      "status": "en emisión",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/o6F0N46WsVc43h6LVJtnvQiky0s.jpg"
+    },
+    {
+      "title": "Overgeared",
+      "description": "Fantasía con aire de videojuego: un jugador sin suerte hereda la clase de un herrero legendario. El episodio 10 llega el domingo 29 de noviembre.",
       "platform": "Crunchyroll",
       "type": "serie",
       "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/rHI61poyqC6GF0HRurV6Hq12K81.jpg",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/94GLmulA9qVGsuo9kLpVKi01E2Z.jpg",
       "packageName": "com.crunchyroll.crunchyroid"
     },
     {
-      "title": "A Returner's Magic Should Be Special (temporada 2)",
-      "description": "Desir vuelve al pasado para evitar la caída de la humanidad ante el Dominio de las Sombras. Nueva temporada con episodio cada miércoles.",
+      "title": "Hello, I Am a Witch and My Crush Wants Me to Make a Love Potion!",
+      "description": "Comedia romántica de fantasía: una bruja recibe el encargo de preparar un filtro de amor... para el chico que le gusta. El episodio 9 llega el 30 de noviembre.",
       "platform": "Crunchyroll",
       "type": "serie",
       "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/svwCvfLCUqc5tn85lijkKqTXQLF.jpg",
-      "packageName": "com.crunchyroll.crunchyroid"
-    },
-    {
-      "title": "Dreamland",
-      "description": "Terrence se convierte en Viajero y explora Dreamland, un mundo hecho de los sueños de la humanidad, donde aprende a dominar el fuego. En simulcast desde el 16 de octubre.",
-      "platform": "Crunchyroll",
-      "type": "serie",
-      "status": "en emisión",
-      "imageUrl": "https://image.tmdb.org/t/p/w500/u4kYL7PSYFGTCZPMOaozPnDWzj6.jpg",
+      "imageUrl": "https://image.tmdb.org/t/p/w500/jBb1VBvfCdM6HXeMANGDkzu99Kx.jpg",
       "packageName": "com.crunchyroll.crunchyroid"
     }
   ]
